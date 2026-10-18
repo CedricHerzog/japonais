@@ -1,12 +1,17 @@
 use std::fs::{self, File};
-use std::io::Write;
+use std::io::{self, Write};
 
 use crate::card::Card;
 use std::env;
 
+/// Returns an empty deck on first launch (no file yet).
 pub fn load() -> Result<Vec<Card>, Box<dyn std::error::Error>> {
     let path = env::home_dir().ok_or("dossier introuvable")?;
-    let content = fs::read_to_string(path.join(".kana/progression.json"))?;
+    let content = match fs::read_to_string(path.join(".kana/progression.json")) {
+        Ok(content) => content,
+        Err(e) if e.kind() == io::ErrorKind::NotFound => return Ok(Vec::new()),
+        Err(e) => return Err(e.into()),
+    };
     let cards: Vec<Card> = serde_json::from_str(&content)?;
     Ok(cards)
 }

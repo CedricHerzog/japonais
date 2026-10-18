@@ -66,7 +66,9 @@ Each step names the Rust concepts it teaches.
 - Write the cards to and read them from `~/.kana/progression.json`.
 - **Rust:** `Result` and `?`, error handling. Crates: `serde`, `serde_json`, `dirs`.
 
-### Step 5: Gradual unlocking and interleaving
+### Step 5: Gradual unlocking and interleaving ✅
+- **Done:** `card::unlock_next_group` adds the next group when the current one is all in box 3+, and runs at startup, so a fresh deck starts with group 1. `kana::CONFUSABLES` + `look_alikes` add unlocked look-alikes to the session, using a `HashSet` of extras and a `HashSet` of asked cards so it can't ping-pong. A look-alike answered right keeps its schedule; a wrong one goes back to box 1. 7 unit tests in `card.rs`.
+- Also: `storage::load` returns an empty deck when the file is missing, and `main` refuses to start if the file is corrupt, rather than overwriting it.
 - Unlock the next group of 5 when every card in the current group is in box 3 or higher.
 - Add a `CONFUSABLES` table. When one of these characters comes up, put its look-alikes into the same session.
 - **Rust:** `HashMap`, closures, unit tests (`#[cfg(test)]`, `cargo test`).

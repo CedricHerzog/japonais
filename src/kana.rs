@@ -246,3 +246,24 @@ pub const HIRAGANA: &[Kana] = &[
         group: 10,
     },
 ];
+
+/// Sets of kana that look alike, mixed into the same session.
+pub const CONFUSABLES: &[&[&str]] = &[
+    &["さ", "ち"],
+    &["き", "さ"],
+    &["ぬ", "め"],
+    &["ね", "れ", "わ"],
+    &["る", "ろ"],
+    &["は", "ほ"],
+    &["い", "り"],
+    &["こ", "に"],
+];
+
+/// Kana that look like `kana`, without `kana` itself.
+pub fn look_alikes(kana: &str) -> impl Iterator<Item = &'static str> {
+    CONFUSABLES
+        .iter()
+        .filter(move |set| set.contains(&kana))
+        .flat_map(|set| set.iter().copied())
+        .filter(move |&other| other != kana)
+}
