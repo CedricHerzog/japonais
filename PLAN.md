@@ -33,6 +33,8 @@ A command-line app, with its interface in French, for learning hiragana and late
 
 Each step names the Rust concepts it teaches.
 
+**Convention:** code (identifiers, file names, comments) is in English. Only what the user sees (messages, prompts) is in French.
+
 ### Step 0: Setup ✅
 - Install Rust with `rustup`, then run `cargo new kana`.
 - Read chapters 1–3 of *The Rust Book* (doc.rust-lang.org/book).
@@ -45,17 +47,22 @@ Each step names the Rust concepts it teaches.
 - Accept the alternate romaji spellings: し = shi/si, ち = chi/ti, つ = tsu/tu, ふ = fu/hu.
 - **Rust:** `struct`, slices, modules (`mod`), `&'static str`.
 
-### Step 2: A minimal quiz
+### Step 2: A minimal quiz ✅
+- **Done:** an endless random quiz in French. `trim()` removes the `\n` that `read_line` keeps, `romaji.contains(&answer)` accepts every spelling, and `Ok(0) => break` exits cleanly at end of input (Ctrl+D).
+- Lessons learned: `read_line` keeps the newline; `match` arms are checked in order, so `Ok(0)` goes before `Ok(_)`.
 - Loop: pick a random kana, read a line from stdin, compare the answer, print "Correct !" or "Raté, c'était …".
 - **Rust:** `std::io`, `String` vs `&str`, `match`, `loop`. Crate: `rand`.
 
-### Step 3: Leitner boxes
-- `struct Carte { id, boite: u8, prochaine_revision: NaiveDate }`.
+### Step 3: Leitner boxes ✅
+- **Done:** [src/card.rs](src/card.rs) has `Card { id, box_number, next_study }`, `enum Outcome { Correct, Wrong }`, and `new` / `is_due` / `answer`, with delays of 0/1/3/7/21 days. [src/main.rs](src/main.rs) builds a deck from group 1, asks only due cards, and ends with "Session terminée !". `q` quits.
+- Lessons learned: don't call a type `Result`, because it hides the standard one; the last expression is the return value; using indices (`cards[x]`) avoids borrow-checker trouble.
 - A right answer moves the card up one box. A wrong answer sends it back to box 1.
 - A session shows the cards due today first, then the new ones.
 - **Rust:** `enum`, `impl`, `Vec`, `Option`, sorting and filtering with iterators. Crate: `chrono`.
 
-### Step 4: Saving progress
+### Step 4: Saving progress ✅
+- **Done:** [src/storage.rs](src/storage.rs) has `load` / `save` using `?`, and `Card` derives `Serialize`/`Deserialize`. `main` loads the deck, or builds a new one on first launch, with a `match` used as an expression, and saves after every answer.
+- Lessons learned: `?` = "return the error, otherwise unwrap the value", and it needs a function that returns `Result`; `Box<dyn Error>` accepts any error; `match` produces a value; `if let` handles the one case you care about.
 - Write the cards to and read them from `~/.kana/progression.json`.
 - **Rust:** `Result` and `?`, error handling. Crates: `serde`, `serde_json`, `dirs`.
 
@@ -70,7 +77,7 @@ Each step names the Rust concepts it teaches.
 - **Rust:** traits and derive. Crate: `clap` (derive).
 
 ### Step 7: Mnemonics and polish
-- Add a `mnemonique: Option<&'static str>` field in French, shown after a mistake.
+- Add a `mnemonic: Option<&'static str>` field (the text itself in French), shown after a mistake.
 - Colours with the `colored` crate. Time each answer: a slow right answer moves up one box, a fast one moves up two.
 - **Rust:** `Option` in depth, `std::time::Instant`.
 
@@ -88,9 +95,9 @@ kana/
 └── src/
     ├── main.rs        # CLI (clap)
     ├── kana.rs        # data tables
-    ├── carte.rs       # Carte + Leitner logic
+    ├── card.rs        # Card + Leitner logic
     ├── session.rs     # review loop
-    └── stockage.rs    # JSON save/load
+    └── storage.rs     # JSON save/load
 ```
 
 ## 5. Possible next steps
