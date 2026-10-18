@@ -73,7 +73,9 @@ Each step names the Rust concepts it teaches.
 - Add a `CONFUSABLES` table. When one of these characters comes up, put its look-alikes into the same session.
 - **Rust:** `HashMap`, closures, unit tests (`#[cfg(test)]`, `cargo test`).
 
-### Step 6: Command-line interface
+### Step 6: Command-line interface ✅
+- **Done:** the binary is named `kana`. [src/main.rs](src/main.rs) parses `revision` (the default, `--mode normal|inverse`), `stats` (a per-box bar chart) and `reset` (asks for confirmation) with clap derive. The review loop moved to [src/session.rs](src/session.rs), which returns a `Summary` that implements `Display` by hand. Answers are lowercased, so `KA` is accepted.
+- `--script katakana` is left for Step 8.
 - Subcommands: `kana revision`, `kana stats`, `kana reset`, with options `--mode inverse` and `--script katakana`.
 - Write all messages in French. Show a short summary at the end of each session (score, cards that went up a box, next review).
 - **Rust:** traits and derive. Crate: `clap` (derive).

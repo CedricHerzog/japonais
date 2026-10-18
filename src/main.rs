@@ -1,94 +1,99 @@
-use std::collections::{HashMap, HashSet};
-use std::io;
+use chrono::NaiveDate;
+use clap::{Parser, Subcommand};
 
-use rand::RngExt;
-
-use crate::card::{Card, Outcome};
+use crate::card::Card;
+use crate::session::Mode;
 
 mod card;
 mod kana;
+mod session;
 mod storage;
 
+/// Apprends les hiragana dans ton terminal.
+#[derive(Parser)]
+#[command(version, about)]
+struct Cli {
+    #[command(subcommand)]
+    command: Option<Command>,
+}
+
+#[derive(Subcommand)]
+enum Command {
+    /// Lance une session de révision (commande par défaut)
+    Revision {
+        /// Sens des questions
+        #[arg(long, value_enum, default_value_t = Mode::Normal)]
+        mode: Mode,
+    },
+    /// Affiche ta progression
+    Stats,
+    /// Efface toute ta progression
+    Reset,
+}
+
 fn main() {
+    let cli = Cli::parse();
     let today = chrono::Local::now().date_naive();
-    let mut cards: Vec<Card> = match storage::load() {
-        Ok(cards) => cards,
-        Err(e) => {
-            // Don't start (and overwrite) if the save file exists but can't be read.
-            println!("Impossible de charger la progression : {e}");
-            return;
-        }
-    };
 
-    if let Some(group) = card::unlock_next_group(&mut cards, today) {
-        let new_kana: Vec<&str> = kana::HIRAGANA
-            .iter()
-            .filter(|k| k.group == group)
-            .map(|k| k.kana)
-            .collect();
-        println!("Nouveau groupe débloqué : {}", new_kana.join(" "));
+    match cli
+        .command
+        .unwrap_or(Command::Revision { mode: Mode::Normal })
+    {
+        Command::Revision { mode } => {
+            let Some(mut cards) = load() else { return };
+            if let Some(group) = card::unlock_next_group(&mut cards, today) {
+                let new_kana: Vec<&str> = kana::HIRAGANA
+                    .iter()
+                    .filter(|k| k.group == group)
+                    .map(|k| k.kana)
+                    .collect();
+                println!("Nouveau groupe débloqué : {}", new_kana.join(" "));
+            }
+            let summary = session::run(&mut cards, today, mode);
+            println!("\n{summary}");
+        }
+        Command::Stats => {
+            let Some(cards) = load() else { return };
+            stats(&cards, today);
+        }
+        Command::Reset => reset(),
     }
+}
 
-    // kana → index in `cards`, to find look-alikes quickly
-    let index: HashMap<&str, usize> = cards
-        .iter()
-        .enumerate()
-        .map(|(i, c)| (kana::HIRAGANA[c.id].kana, i))
-        .collect();
-    let mut asked: HashSet<usize> = HashSet::new();
-    let mut extras: HashSet<usize> = HashSet::new(); // look-alikes added to this session
-
-    loop {
-        let pool: Vec<usize> = (0..cards.len())
-            .filter(|&i| cards[i].is_due(today) || extras.contains(&i))
-            .collect();
-        if pool.is_empty() {
-            println!("Session terminée !");
-            break;
+/// Loads the deck, or prints why it can't (so a corrupt file is never overwritten).
+fn load() -> Option<Vec<Card>> {
+    match storage::load() {
+        Ok(cards) => Some(cards),
+        Err(e) => {
+            println!("Impossible de charger la progression : {e}");
+            println!("(« kana reset » repart de zéro.)");
+            None
         }
+    }
+}
 
-        let x = pool[rand::rng().random_range(0..pool.len())];
-        let to_guess = &kana::HIRAGANA[cards[x].id];
-        println!("Quel est le romaji de {} ?", to_guess.kana);
+fn stats(cards: &[Card], today: NaiveDate) {
+    if cards.is_empty() {
+        println!("Aucune progression. Lance « kana revision » pour commencer.");
+        return;
+    }
+    println!("Kana débloqués : {}/{}", cards.len(), kana::HIRAGANA.len());
+    for b in 1..=5 {
+        let n = cards.iter().filter(|c| c.box_number == b).count();
+        println!("Boîte {b} : {:<3} {}", n, "█".repeat(n));
+    }
+    let due = cards.iter().filter(|c| c.is_due(today)).count();
+    println!("À réviser aujourd'hui : {due}");
+}
 
-        let mut input = String::new();
-        match io::stdin().read_line(&mut input) {
-            Ok(0) => break,
-            Ok(_) => {
-                let answer = input.trim();
-                if answer == "q" {
-                    break;
-                }
-
-                if to_guess.romaji.contains(&answer) {
-                    println!("Correct ! :-)");
-                    // A look-alike asked early keeps its schedule when right.
-                    if cards[x].is_due(today) {
-                        cards[x].answer(Outcome::Correct, today);
-                    }
-                } else {
-                    println!("Raté, c'était {}... :-(", to_guess.romaji[0]);
-                    cards[x].answer(Outcome::Wrong, today);
-                }
-
-                asked.insert(x);
-                extras.remove(&x);
-                for other in kana::look_alikes(to_guess.kana) {
-                    if let Some(&i) = index.get(other) {
-                        if !asked.contains(&i) {
-                            extras.insert(i);
-                        }
-                    }
-                }
-
-                if let Err(e) = storage::save(&cards) {
-                    println!("Erreur de sauvegarde : {e}");
-                }
-            }
-            Err(error) => {
-                println!("Erreur : {error}");
-                break;
-            }
-        }
+fn reset() {
+    println!("Effacer toute la progression ? (o/n)");
+    if session::read_line().as_deref() != Some("o") {
+        println!("Annulé.");
+        return;
+    }
+    match storage::reset() {
+        Ok(()) => println!("Progression effacée."),
+        Err(e) => println!("Erreur : {e}"),
     }
 }
