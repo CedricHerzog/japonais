@@ -33,13 +33,15 @@ A command-line app, with its interface in French, for learning hiragana and late
 
 Each step names the Rust concepts it teaches.
 
-### Step 0: Setup
+### Step 0: Setup ✅
 - Install Rust with `rustup`, then run `cargo new kana`.
 - Read chapters 1–3 of *The Rust Book* (doc.rust-lang.org/book).
 - **Rust:** cargo, `fn main`, `let`/`mut`, basic types.
 
-### Step 1: Character data
-- Create `src/kana.rs` with `struct Kana { kana: &'static str, romaji: &'static str, groupe: u8 }` and a `const HIRAGANA: &[Kana]` table.
+### Step 1: Character data ✅
+- **Done:** [src/kana.rs](src/kana.rs) holds `pub struct Kana { kana, romaji: &'static [&'static str], group: u8 }` and `HIRAGANA`, with 46 kana in 10 groups. [src/main.rs](src/main.rs) declares `mod kana;` and lists the whole table. The build has no warnings.
+- Lessons learned: `'x'` is a `char` and `"x"` is a `&str`; `&[...]` makes a slice; each field needs its own `pub`; `mod` goes in `main.rs`.
+- Create `src/kana.rs` with `struct Kana { kana: &'static str, romaji: &'static [&'static str], group: u8 }` and a `const HIRAGANA: &[Kana]` table.
 - Accept the alternate romaji spellings: し = shi/si, ち = chi/ti, つ = tsu/tu, ふ = fu/hu.
 - **Rust:** `struct`, slices, modules (`mod`), `&'static str`.
 

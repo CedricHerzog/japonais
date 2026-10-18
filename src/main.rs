@@ -1,3 +1,8 @@
+mod kana;
+
 fn main() {
-    println!("Hello, world!");
+    for k in kana::HIRAGANA {
+        println!("{} {} {}", k.group, k.kana, k.romaji.join(" "))
+    }
+    println!("Total : {}", kana::HIRAGANA.len())
 }
