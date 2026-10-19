@@ -87,10 +87,10 @@ pub fn run(cards: &mut [Card], script: Script, today: NaiveDate, mode: Mode) -> 
         asked.insert(x);
         extras.remove(&x);
         for other in kana::look_alikes(to_guess.kana) {
-            if let Some(&i) = index.get(other) {
-                if !asked.contains(&i) {
-                    extras.insert(i);
-                }
+            if let Some(&i) = index.get(other)
+                && !asked.contains(&i)
+            {
+                extras.insert(i);
             }
         }
 
