@@ -44,8 +44,23 @@ impl fmt::Display for Summary {
 }
 
 /// Runs a review session on the due cards (plus look-alikes) and saves after each answer.
-pub fn run(cards: &mut [Card], script: Script, today: NaiveDate, mode: Mode) -> Summary {
+/// With `ahead`, every unlocked card is asked once, like Anki's "Review ahead".
+pub fn run(
+    cards: &mut [Card],
+    script: Script,
+    today: NaiveDate,
+    mode: Mode,
+    ahead: bool,
+) -> Summary {
     let table = script.table();
+    let mut summary = Summary::default();
+    if !ahead && !cards.iter().any(|c| c.is_due(today)) {
+        println!("Rien à réviser pour l'instant.");
+        println!("Pour réviser quand même : « kana revision --avance ».");
+        summary.next_review = cards.iter().map(|c| c.next_study).min();
+        return summary;
+    }
+
     // kana → index in `cards`, to find look-alikes quickly
     let index: HashMap<&str, usize> = cards
         .iter()
@@ -54,11 +69,12 @@ pub fn run(cards: &mut [Card], script: Script, today: NaiveDate, mode: Mode) -> 
         .collect();
     let mut asked: HashSet<usize> = HashSet::new();
     let mut extras: HashSet<usize> = HashSet::new(); // look-alikes added to this session
-    let mut summary = Summary::default();
 
     loop {
         let pool: Vec<usize> = (0..cards.len())
-            .filter(|&i| cards[i].is_due(today) || extras.contains(&i))
+            .filter(|&i| {
+                cards[i].is_due(today) || extras.contains(&i) || (ahead && !asked.contains(&i))
+            })
             .collect();
         if pool.is_empty() {
             println!("Session terminée !");
@@ -76,8 +92,9 @@ pub fn run(cards: &mut [Card], script: Script, today: NaiveDate, mode: Mode) -> 
         if outcome != Outcome::Wrong {
             summary.correct += 1;
         }
-        // A look-alike asked early keeps its schedule when right.
-        if outcome == Outcome::Wrong || cards[x].is_due(today) {
+        // A look-alike asked early keeps its schedule when right. In ahead mode
+        // every answer counts: FSRS gives an early success only a small gain.
+        if outcome == Outcome::Wrong || cards[x].is_due(today) || ahead {
             cards[x].answer(outcome, today);
         }
         if outcome != Outcome::Wrong && cards[x].stability() > before {

@@ -151,6 +151,19 @@ mod tests {
     }
 
     #[test]
+    fn early_review_gains_less_than_on_time() {
+        let mut early = Card::new(0, day());
+        early.answer(Outcome::Correct, day());
+        let mut on_time = Card::new(0, day());
+        on_time.answer(Outcome::Correct, day());
+        let due = on_time.next_study;
+
+        early.answer(Outcome::Correct, day() + Days::new(1));
+        on_time.answer(Outcome::Correct, due);
+        assert!(early.stability() < on_time.stability());
+    }
+
+    #[test]
     fn empty_deck_unlocks_group_1() {
         let mut cards = Vec::new();
         assert_eq!(unlock_next_group(&mut cards, HIRAGANA, day()), Some(1));

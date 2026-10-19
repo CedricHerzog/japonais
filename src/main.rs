@@ -30,6 +30,9 @@ enum Command {
         /// Sens des questions
         #[arg(long, value_enum, default_value_t = Mode::Normal)]
         mode: Mode,
+        /// Révise toutes les cartes débloquées, même celles qui ne sont pas encore dues
+        #[arg(long)]
+        avance: bool,
     },
     /// Affiche ta progression
     Stats,
@@ -42,11 +45,11 @@ fn main() {
     let today = chrono::Local::now().date_naive();
     let script = cli.script;
 
-    match cli
-        .command
-        .unwrap_or(Command::Revision { mode: Mode::Normal })
-    {
-        Command::Revision { mode } => {
+    match cli.command.unwrap_or(Command::Revision {
+        mode: Mode::Normal,
+        avance: false,
+    }) {
+        Command::Revision { mode, avance } => {
             let Some(mut cards) = load(script) else {
                 return;
             };
@@ -59,7 +62,7 @@ fn main() {
                     .collect();
                 println!("Nouveau groupe débloqué : {}", new_kana.join(" "));
             }
-            let summary = session::run(&mut cards, script, today, mode);
+            let summary = session::run(&mut cards, script, today, mode, avance);
             println!("\n{summary}");
         }
         Command::Stats => {
