@@ -1,3 +1,5 @@
+use clap::ValueEnum;
+
 pub struct Kana {
     pub kana: &'static str,
     pub romaji: &'static [&'static str],
@@ -310,6 +312,315 @@ pub const HIRAGANA: &[Kana] = &[
     },
 ];
 
+pub const KATAKANA: &[Kana] = &[
+    // group 1: voyelles
+    Kana {
+        kana: "ア",
+        romaji: &["a"],
+        group: 1,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "イ",
+        romaji: &["i"],
+        group: 1,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ウ",
+        romaji: &["u"],
+        group: 1,
+        mnemonic: Some("Comme う, avec un petit trait sur la tête : u. (ワ n'a pas ce trait.)"),
+    },
+    Kana {
+        kana: "エ",
+        romaji: &["e"],
+        group: 1,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "オ",
+        romaji: &["o"],
+        group: 1,
+        mnemonic: None,
+    },
+    // group 2: k
+    Kana {
+        kana: "カ",
+        romaji: &["ka"],
+        group: 2,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "キ",
+        romaji: &["ki"],
+        group: 2,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ク",
+        romaji: &["ku"],
+        group: 2,
+        mnemonic: Some(
+            "Comme く avec un petit toit : ku. (タ a un trait en plus dedans, ケ une barre qui dépasse.)",
+        ),
+    },
+    Kana {
+        kana: "ケ",
+        romaji: &["ke"],
+        group: 2,
+        mnemonic: Some(
+            "Une barre qui dépasse à droite, avec une jambe qui descend : ke. (ク n'a pas de barre.)",
+        ),
+    },
+    Kana {
+        kana: "コ",
+        romaji: &["ko"],
+        group: 2,
+        mnemonic: Some(
+            "Un carré ouvert à gauche, net et fermé : ko. (ユ a la barre du bas qui dépasse.)",
+        ),
+    },
+    // group 3: s
+    Kana {
+        kana: "サ",
+        romaji: &["sa"],
+        group: 3,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "シ",
+        romaji: &["shi", "si"],
+        group: 3,
+        mnemonic: Some(
+            "Les deux petits traits sont à gauche, l'un sous l'autre, et le grand remonte depuis le bas : shi. (ツ a ses petits traits en haut.)",
+        ),
+    },
+    Kana {
+        kana: "ス",
+        romaji: &["su"],
+        group: 3,
+        mnemonic: Some("Un tabouret à deux pieds écartés : su. (ヌ a un trait qui le traverse.)"),
+    },
+    Kana {
+        kana: "セ",
+        romaji: &["se"],
+        group: 3,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ソ",
+        romaji: &["so"],
+        group: 3,
+        mnemonic: Some(
+            "Le grand trait descend depuis le haut, comme une goutte qui tombe : so. (ン remonte.)",
+        ),
+    },
+    // group 4: t
+    Kana {
+        kana: "タ",
+        romaji: &["ta"],
+        group: 4,
+        mnemonic: Some("ク avec un petit trait ajouté à l'intérieur : ta."),
+    },
+    Kana {
+        kana: "チ",
+        romaji: &["chi", "ti"],
+        group: 4,
+        mnemonic: Some(
+            "Ressemble à ち, et le trait du milieu traverse la barre : chi. (テ a deux barres séparées.)",
+        ),
+    },
+    Kana {
+        kana: "ツ",
+        romaji: &["tsu", "tu"],
+        group: 4,
+        mnemonic: Some(
+            "Les deux petits traits sont côte à côte en haut, et le grand descend depuis le haut : tsu. (シ a ses petits traits à gauche.)",
+        ),
+    },
+    Kana {
+        kana: "テ",
+        romaji: &["te"],
+        group: 4,
+        mnemonic: Some(
+            "Deux barres et un pied qui descend, comme une table : te. (チ a un trait qui traverse.)",
+        ),
+    },
+    Kana {
+        kana: "ト",
+        romaji: &["to"],
+        group: 4,
+        mnemonic: None,
+    },
+    // group 5: n
+    Kana {
+        kana: "ナ",
+        romaji: &["na"],
+        group: 5,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ニ",
+        romaji: &["ni"],
+        group: 5,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ヌ",
+        romaji: &["nu"],
+        group: 5,
+        mnemonic: Some(
+            "Comme ス, mais traversé par un trait, comme une nouille piquée par une baguette : nu.",
+        ),
+    },
+    Kana {
+        kana: "ネ",
+        romaji: &["ne"],
+        group: 5,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ノ",
+        romaji: &["no"],
+        group: 5,
+        mnemonic: None,
+    },
+    // group 6: h
+    Kana {
+        kana: "ハ",
+        romaji: &["ha"],
+        group: 6,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ヒ",
+        romaji: &["hi"],
+        group: 6,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "フ",
+        romaji: &["fu", "hu"],
+        group: 6,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ヘ",
+        romaji: &["he"],
+        group: 6,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ホ",
+        romaji: &["ho"],
+        group: 6,
+        mnemonic: None,
+    },
+    // group 7: m
+    Kana {
+        kana: "マ",
+        romaji: &["ma"],
+        group: 7,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ミ",
+        romaji: &["mi"],
+        group: 7,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ム",
+        romaji: &["mu"],
+        group: 7,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "メ",
+        romaji: &["me"],
+        group: 7,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "モ",
+        romaji: &["mo"],
+        group: 7,
+        mnemonic: None,
+    },
+    // group 8: y
+    Kana {
+        kana: "ヤ",
+        romaji: &["ya"],
+        group: 8,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ユ",
+        romaji: &["yu"],
+        group: 8,
+        mnemonic: Some("Un « U » couché dont la barre du bas dépasse : yu. (コ ne dépasse pas.)"),
+    },
+    Kana {
+        kana: "ヨ",
+        romaji: &["yo"],
+        group: 8,
+        mnemonic: None,
+    },
+    // group 9: r
+    Kana {
+        kana: "ラ",
+        romaji: &["ra"],
+        group: 9,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "リ",
+        romaji: &["ri"],
+        group: 9,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ル",
+        romaji: &["ru"],
+        group: 9,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "レ",
+        romaji: &["re"],
+        group: 9,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ロ",
+        romaji: &["ro"],
+        group: 9,
+        mnemonic: None,
+    },
+    // group 10: w + n
+    Kana {
+        kana: "ワ",
+        romaji: &["wa"],
+        group: 10,
+        mnemonic: Some("Comme ウ sans le petit trait du haut, et proche de わ : wa."),
+    },
+    Kana {
+        kana: "ヲ",
+        romaji: &["wo", "o"],
+        group: 10,
+        mnemonic: None,
+    },
+    Kana {
+        kana: "ン",
+        romaji: &["n", "nn"],
+        group: 10,
+        mnemonic: Some(
+            "Le grand trait remonte depuis le bas, comme un sourire en coin : n. (ソ descend.)",
+        ),
+    },
+];
+
 /// Sets of kana that look alike, mixed into the same session.
 pub const CONFUSABLES: &[&[&str]] = &[
     &["さ", "ち"],
@@ -320,7 +631,37 @@ pub const CONFUSABLES: &[&[&str]] = &[
     &["は", "ほ"],
     &["い", "り"],
     &["こ", "に"],
+    &["シ", "ツ"],
+    &["ソ", "ン"],
+    &["ク", "ケ", "タ"],
+    &["ス", "ヌ"],
+    &["コ", "ユ"],
+    &["チ", "テ"],
+    &["ウ", "ワ"],
 ];
+
+/// Which syllabary to study. Each one has its own table and its own deck.
+#[derive(Clone, Copy, ValueEnum)]
+pub enum Script {
+    Hiragana,
+    Katakana,
+}
+
+impl Script {
+    pub fn table(self) -> &'static [Kana] {
+        match self {
+            Script::Hiragana => HIRAGANA,
+            Script::Katakana => KATAKANA,
+        }
+    }
+
+    pub fn name(self) -> &'static str {
+        match self {
+            Script::Hiragana => "hiragana",
+            Script::Katakana => "katakana",
+        }
+    }
+}
 
 /// Kana that look like `kana`, without `kana` itself.
 pub fn look_alikes(kana: &str) -> impl Iterator<Item = &'static str> {
@@ -329,4 +670,40 @@ pub fn look_alikes(kana: &str) -> impl Iterator<Item = &'static str> {
         .filter(move |set| set.contains(&kana))
         .flat_map(|set| set.iter().copied())
         .filter(move |&other| other != kana)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tables_have_46_kana_in_10_groups() {
+        for table in [HIRAGANA, KATAKANA] {
+            assert_eq!(table.len(), 46);
+            for group in 1..=10 {
+                let n = table.iter().filter(|k| k.group == group).count();
+                let expected = if group == 8 || group == 10 { 3 } else { 5 };
+                assert_eq!(n, expected, "group {group}");
+            }
+        }
+    }
+
+    #[test]
+    fn tables_line_up() {
+        for (h, k) in HIRAGANA.iter().zip(KATAKANA) {
+            assert_eq!(h.romaji, k.romaji);
+            assert_eq!(h.group, k.group);
+        }
+    }
+
+    #[test]
+    fn every_look_alike_exists_and_has_a_mnemonic() {
+        let all: Vec<&Kana> = HIRAGANA.iter().chain(KATAKANA).collect();
+        for set in CONFUSABLES {
+            for &kana in *set {
+                let k = all.iter().find(|k| k.kana == kana);
+                assert!(k.is_some_and(|k| k.mnemonic.is_some()), "{kana}");
+            }
+        }
+    }
 }

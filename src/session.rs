@@ -9,7 +9,7 @@ use colored::Colorize;
 use rand::RngExt;
 
 use crate::card::{Card, Outcome};
-use crate::kana::{self, Kana};
+use crate::kana::{self, Kana, Script};
 use crate::storage;
 
 /// A right answer typed faster than this moves the card up two boxes.
@@ -44,12 +44,13 @@ impl fmt::Display for Summary {
 }
 
 /// Runs a review session on the due cards (plus look-alikes) and saves after each answer.
-pub fn run(cards: &mut [Card], today: NaiveDate, mode: Mode) -> Summary {
+pub fn run(cards: &mut [Card], script: Script, today: NaiveDate, mode: Mode) -> Summary {
+    let table = script.table();
     // kana → index in `cards`, to find look-alikes quickly
     let index: HashMap<&str, usize> = cards
         .iter()
         .enumerate()
-        .map(|(i, c)| (kana::HIRAGANA[c.id].kana, i))
+        .map(|(i, c)| (table[c.id].kana, i))
         .collect();
     let mut asked: HashSet<usize> = HashSet::new();
     let mut extras: HashSet<usize> = HashSet::new(); // look-alikes added to this session
@@ -65,7 +66,7 @@ pub fn run(cards: &mut [Card], today: NaiveDate, mode: Mode) -> Summary {
         }
 
         let x = pool[rand::rng().random_range(0..pool.len())];
-        let to_guess = &kana::HIRAGANA[cards[x].id];
+        let to_guess = &table[cards[x].id];
         let Some(outcome) = ask(to_guess, mode) else {
             break;
         };
@@ -93,7 +94,7 @@ pub fn run(cards: &mut [Card], today: NaiveDate, mode: Mode) -> Summary {
             }
         }
 
-        if let Err(e) = storage::save(cards) {
+        if let Err(e) = storage::save(script, cards) {
             println!("Erreur de sauvegarde : {e}");
         }
     }

@@ -1,7 +1,9 @@
 use chrono::{Days, NaiveDate};
 use serde::{Deserialize, Serialize};
 
+#[cfg(test)]
 use crate::kana::HIRAGANA;
+use crate::kana::Kana;
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum Outcome {
@@ -12,7 +14,7 @@ pub enum Outcome {
 
 #[derive(Serialize, Deserialize)]
 pub struct Card {
-    pub id: usize,      // index into HIRAGANA
+    pub id: usize,      // index into its script's table
     pub box_number: u8, // 1 to 5
     pub next_study: NaiveDate,
 }
@@ -49,23 +51,19 @@ impl Card {
 
 /// Adds the next group's cards if every card of the current group is in box 3+.
 /// Returns the unlocked group number, if any.
-pub fn unlock_next_group(cards: &mut Vec<Card>, today: NaiveDate) -> Option<u8> {
-    let current = cards
-        .iter()
-        .map(|c| HIRAGANA[c.id].group)
-        .max()
-        .unwrap_or(0);
+pub fn unlock_next_group(cards: &mut Vec<Card>, table: &[Kana], today: NaiveDate) -> Option<u8> {
+    let current = cards.iter().map(|c| table[c.id].group).max().unwrap_or(0);
 
     let mastered = cards
         .iter()
-        .filter(|c| HIRAGANA[c.id].group == current)
+        .filter(|c| table[c.id].group == current)
         .all(|c| c.box_number >= 3);
     if !mastered {
         return None;
     }
 
     let next = current + 1;
-    let new_cards: Vec<Card> = HIRAGANA
+    let new_cards: Vec<Card> = table
         .iter()
         .enumerate()
         .filter(|&(_, k)| k.group == next)
@@ -127,30 +125,30 @@ mod tests {
     #[test]
     fn empty_deck_unlocks_group_1() {
         let mut cards = Vec::new();
-        assert_eq!(unlock_next_group(&mut cards, day()), Some(1));
+        assert_eq!(unlock_next_group(&mut cards, HIRAGANA, day()), Some(1));
         assert_eq!(cards.len(), 5);
     }
 
     #[test]
     fn group_not_mastered_unlocks_nothing() {
         let mut cards = Vec::new();
-        unlock_next_group(&mut cards, day());
+        unlock_next_group(&mut cards, HIRAGANA, day());
         for card in cards.iter_mut() {
             card.box_number = 3;
         }
         cards[0].box_number = 2;
-        assert_eq!(unlock_next_group(&mut cards, day()), None);
+        assert_eq!(unlock_next_group(&mut cards, HIRAGANA, day()), None);
         assert_eq!(cards.len(), 5);
     }
 
     #[test]
     fn mastered_group_unlocks_next() {
         let mut cards = Vec::new();
-        unlock_next_group(&mut cards, day());
+        unlock_next_group(&mut cards, HIRAGANA, day());
         for card in cards.iter_mut() {
             card.box_number = 3;
         }
-        assert_eq!(unlock_next_group(&mut cards, day()), Some(2));
+        assert_eq!(unlock_next_group(&mut cards, HIRAGANA, day()), Some(2));
         assert_eq!(cards.len(), 10);
     }
 
@@ -160,6 +158,6 @@ mod tests {
         for card in cards.iter_mut() {
             card.box_number = 5;
         }
-        assert_eq!(unlock_next_group(&mut cards, day()), None);
+        assert_eq!(unlock_next_group(&mut cards, HIRAGANA, day()), None);
     }
 }

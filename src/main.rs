@@ -2,6 +2,7 @@ use chrono::NaiveDate;
 use clap::{Parser, Subcommand};
 
 use crate::card::Card;
+use crate::kana::Script;
 use crate::session::Mode;
 
 mod card;
@@ -9,12 +10,16 @@ mod kana;
 mod session;
 mod storage;
 
-/// Apprends les hiragana dans ton terminal.
+/// Apprends les hiragana et les katakana dans ton terminal.
 #[derive(Parser)]
 #[command(version, about)]
 struct Cli {
     #[command(subcommand)]
     command: Option<Command>,
+
+    /// Syllabaire étudié
+    #[arg(long, global = true, value_enum, default_value_t = Script::Hiragana)]
+    script: Script,
 }
 
 #[derive(Subcommand)]
@@ -34,35 +39,39 @@ enum Command {
 fn main() {
     let cli = Cli::parse();
     let today = chrono::Local::now().date_naive();
+    let script = cli.script;
 
     match cli
         .command
         .unwrap_or(Command::Revision { mode: Mode::Normal })
     {
         Command::Revision { mode } => {
-            let Some(mut cards) = load() else { return };
-            if let Some(group) = card::unlock_next_group(&mut cards, today) {
-                let new_kana: Vec<&str> = kana::HIRAGANA
+            let Some(mut cards) = load(script) else {
+                return;
+            };
+            if let Some(group) = card::unlock_next_group(&mut cards, script.table(), today) {
+                let new_kana: Vec<&str> = script
+                    .table()
                     .iter()
                     .filter(|k| k.group == group)
                     .map(|k| k.kana)
                     .collect();
                 println!("Nouveau groupe débloqué : {}", new_kana.join(" "));
             }
-            let summary = session::run(&mut cards, today, mode);
+            let summary = session::run(&mut cards, script, today, mode);
             println!("\n{summary}");
         }
         Command::Stats => {
-            let Some(cards) = load() else { return };
-            stats(&cards, today);
+            let Some(cards) = load(script) else { return };
+            stats(&cards, script, today);
         }
-        Command::Reset => reset(),
+        Command::Reset => reset(script),
     }
 }
 
 /// Loads the deck, or prints why it can't (so a corrupt file is never overwritten).
-fn load() -> Option<Vec<Card>> {
-    match storage::load() {
+fn load(script: Script) -> Option<Vec<Card>> {
+    match storage::load(script) {
         Ok(cards) => Some(cards),
         Err(e) => {
             println!("Impossible de charger la progression : {e}");
@@ -72,12 +81,15 @@ fn load() -> Option<Vec<Card>> {
     }
 }
 
-fn stats(cards: &[Card], today: NaiveDate) {
+fn stats(cards: &[Card], script: Script, today: NaiveDate) {
     if cards.is_empty() {
-        println!("Aucune progression. Lance « kana revision » pour commencer.");
+        println!(
+            "Aucune progression en {0}. Lance « kana revision --script {0} » pour commencer.",
+            script.name()
+        );
         return;
     }
-    println!("Kana débloqués : {}/{}", cards.len(), kana::HIRAGANA.len());
+    println!("Kana débloqués : {}/{}", cards.len(), script.table().len());
     for b in 1..=5 {
         let n = cards.iter().filter(|c| c.box_number == b).count();
         println!("Boîte {b} : {:<3} {}", n, "█".repeat(n));
@@ -86,13 +98,13 @@ fn stats(cards: &[Card], today: NaiveDate) {
     println!("À réviser aujourd'hui : {due}");
 }
 
-fn reset() {
-    println!("Effacer toute la progression ? (o/n)");
+fn reset(script: Script) {
+    println!("Effacer la progression des {} ? (o/n)", script.name());
     if session::read_line().as_deref() != Some("o") {
         println!("Annulé.");
         return;
     }
-    match storage::reset() {
+    match storage::reset(script) {
         Ok(()) => println!("Progression effacée."),
         Err(e) => println!("Erreur : {e}"),
     }

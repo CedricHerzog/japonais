@@ -86,7 +86,9 @@ Each step names the Rust concepts it teaches.
 - Colours with the `colored` crate. Time each answer: a slow right answer moves up one box, a fast one moves up two.
 - **Rust:** `Option` in depth, `std::time::Instant`.
 
-### Step 8: Katakana
+### Step 8: Katakana ✅
+- **Done:** [src/kana.rs](src/kana.rs) has `KATAKANA` (46 kana, same groups and romaji as `HIRAGANA`) and `enum Script { Hiragana, Katakana }` with `table()` / `name()`. `CONFUSABLES` gains シ/ツ, ソ/ン, ク/ケ/タ, ス/ヌ, コ/ユ, チ/テ, ウ/ワ, each with a French mnemonic. `unlock_next_group`, `session::run` and `storage` take the table or the `Script` instead of hard-coding `HIRAGANA`. A global `--script katakana` works with every subcommand; katakana progress lives in `~/.kana/katakana.json`, hiragana keeps `progression.json`. 3 new tests check the tables.
+- Lessons learned: an enum with methods (`match self`) is often enough where you'd reach for a trait; passing `&[Kana]` instead of naming a global makes a function reusable; `#[arg(global = true)]` lets an option go after any subcommand.
 - Add a `KATAKANA` table and a `Script` enum. Reuse the whole engine as is.
 - **Rust:** generics or traits, and refactoring.
 
