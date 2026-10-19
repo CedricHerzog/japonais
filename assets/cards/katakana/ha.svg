@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <!-- ハ (ha) : un coup de hache fend la bûche en deux moitiés qui s'écartent, « Ha ! » -->
+  <rect width="400" height="400" rx="28" fill="#fdf6e3"/>
+  <path d="M0 335H400V372A28 28 0 0 1 372 400H28A28 28 0 0 1 0 372Z" fill="#8fbf7f"/>
+  <!-- chopping block -->
+  <rect x="148" y="318" width="104" height="44" fill="#9b6b43"/>
+  <ellipse cx="200" cy="318" rx="52" ry="12" fill="#f6c667" stroke="#9b6b43" stroke-width="3"/>
+  <!-- the axe, stuck in the block between the two halves -->
+  <line x1="200" y1="312" x2="206" y2="170" stroke="#9b6b43" stroke-width="9" stroke-linecap="round"/>
+  <path d="M184 296H220L226 318H178Z" fill="#4a6274"/>
+  <!-- pale split faces on the inner side of each half -->
+  <g stroke="#f6c667" stroke-width="16" stroke-linecap="round">
+    <line x1="168" y1="186" x2="105" y2="304"/>
+    <line x1="224" y1="182" x2="296" y2="300"/>
+  </g>
+  <!-- motion lines and chips -->
+  <g fill="none" stroke="#4a6274" stroke-width="4" stroke-linecap="round">
+    <path d="M70 215l-22-6M62 250l-24 0M330 210l22-6M340 245l24 0"/>
+  </g>
+  <g fill="#f6c667" stroke="#9b6b43" stroke-width="2">
+    <path d="M150 140l12-6 4 10z"/><path d="M250 130l13 3-6 10z"/><path d="M200 120l8-8 6 9z"/>
+  </g>
+  <path id="glyph" d="M305.3 298.4Q308.6 298.4 311.5 295.2Q314.3 292.1 314.3 288.5Q314.3 287.3 313.7 285.5Q308.3 273.5 299.5 258.7Q290.6 243.8 279.8 227.6Q269.0 211.4 257.5 195.5Q245.9 179.6 234.5 165.8Q233.0 164.0 230.3 164.0Q227.9 164.0 225.5 166.1Q223.1 168.2 223.1 170.9Q223.1 172.7 224.6 174.8Q239.6 194.3 251.8 213.2Q263.9 232.1 275.6 252.1Q287.3 272.0 300.2 295.1Q302.3 298.4 305.3 298.4ZM85.7 310.4Q89.0 310.4 96.4 303.7Q103.7 296.9 113.4 284.9Q123.2 272.9 133.6 257.3Q143.9 241.7 153.2 223.6Q162.5 205.4 168.8 186.5Q170.6 181.4 170.6 179.0Q170.6 176.6 167.5 174.1Q164.3 171.5 160.4 169.9Q156.5 168.2 154.1 168.2Q153.8 168.2 152.6 168.5Q151.4 168.8 151.4 170.9Q151.4 172.4 152.3 174.2Q153.2 176.0 153.2 179.0Q153.2 183.8 148.7 195.4Q144.2 206.9 136.7 221.6Q129.2 236.3 120.4 251.8Q111.5 267.2 102.4 280.1Q93.2 293.0 85.7 300.2Q82.4 303.5 82.4 306.8Q82.4 310.4 85.7 310.4Z" fill="#5b3a22" stroke="#5b3a22" stroke-width="7" stroke-linejoin="round"/>
+</svg>

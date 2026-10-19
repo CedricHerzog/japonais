@@ -4,7 +4,7 @@ pub struct Kana {
     pub kana: &'static str,
     pub romaji: &'static [&'static str],
     pub group: u8,
-    pub mnemonic: Option<&'static str>, // shown in French after a mistake
+    pub mnemonic: &'static str, // French, matches the illustrated card
 }
 
 pub const HIRAGANA: &[Kana] = &[
@@ -13,302 +13,286 @@ pub const HIRAGANA: &[Kana] = &[
         kana: "あ",
         romaji: &["a"],
         group: 1,
-        mnemonic: Some("Un « a » minuscule caché à droite, barré d'une croix."),
+        mnemonic: "Un avion fait un looping et laisse une boucle de fumée ; les passagers crient « Aaah ! » (a)",
     },
     Kana {
         kana: "い",
         romaji: &["i"],
         group: 1,
-        mnemonic: Some(
-            "Deux traits presque égaux, comme deux « i ». (り a le trait de droite bien plus long.)",
-        ),
+        mnemonic: "Deux iris aux longues tiges, un grand et un petit : « i-ris » (i) (り a le trait de droite bien plus long.)",
     },
     Kana {
         kana: "う",
         romaji: &["u"],
         group: 1,
-        mnemonic: Some("Un « u » couché sur le côté, avec une petite tête."),
+        mnemonic: "Un surfeur saute au-dessus d'une vague qui s'enroule : « Ouh ! » (u)",
     },
     Kana {
         kana: "え",
         romaji: &["e"],
         group: 1,
-        mnemonic: Some("Un danseur qui fait le grand écart en criant « Eh ! »"),
+        mnemonic: "Un éclair zigzague du nuage jusqu'au sol : « É-clair ! » (e)",
     },
     Kana {
         kana: "お",
         romaji: &["o"],
         group: 1,
-        mnemonic: Some("Un « o » à droite, une croix à gauche : « Oh ! »"),
+        mnemonic: "Une autruche passe le cou par-dessus la barrière, son gros ventre derrière : « Oh ! » (o)",
     },
     // group 2: k
     Kana {
         kana: "か",
         romaji: &["ka"],
         group: 2,
-        mnemonic: None,
+        mnemonic: "Une catapulte lance son boulet sur le château : « Ka-boum ! » (ka)",
     },
     Kana {
         kana: "き",
         romaji: &["ki"],
         group: 2,
-        mnemonic: Some("Une clé (« key ») avec deux dents : ki. (さ n'a qu'une barre.)"),
+        mnemonic: "Un kimono suspendu à sa perche : les manches, la ceinture obi, le col croisé et le pan du bas : « ki-mono » (ki) (さ n'a qu'une barre.)",
     },
     Kana {
         kana: "く",
         romaji: &["ku"],
         group: 2,
-        mnemonic: Some("Un bec ouvert qui fait « coucou » : ku."),
+        mnemonic: "Main sur la hanche, il pointe le coude : « kou-de » (ku)",
     },
     Kana {
         kana: "け",
         romaji: &["ke"],
         group: 2,
-        mnemonic: None,
+        mnemonic: "La broche d'un kebab et son grand couteau : « ké-bab » (ke)",
     },
     Kana {
         kana: "こ",
         romaji: &["ko"],
         group: 2,
-        mnemonic: Some(
-            "Deux petits traits face à face : ko. (Avec un trait vertical devant, c'est に : ni.)",
-        ),
+        mnemonic: "Un crocodile ouvre grand ses deux mâchoires : « cro-co » (ko) (Avec un tronc vertical devant, c'est に : ni.)",
     },
     // group 3: s
     Kana {
         kana: "さ",
         romaji: &["sa"],
         group: 3,
-        mnemonic: Some(
-            "Une barre au-dessus d'un « c » ouvert à droite : sa. (ち ressemble à un 5.)",
-        ),
+        mnemonic: "Une sardine vient mordre à l'hameçon sous la surface : « sar-dine » (sa) (ち ressemble à un 5.)",
     },
     Kana {
         kana: "し",
         romaji: &["shi", "si"],
         group: 3,
-        mnemonic: Some("Une trace de ski qui remonte : shi."),
+        mnemonic: "Un piment chili tout rouge, recourbé au bout ; ça pique : « chi ! » (shi/si)",
     },
     Kana {
         kana: "す",
         romaji: &["su"],
         group: 3,
-        mnemonic: Some("Une corde avec une boucle, suspendue : su."),
+        mnemonic: "Une souris descend le long d'une corde, sa longue queue pendante : « sou-ris » (su)",
     },
     Kana {
         kana: "せ",
         romaji: &["se"],
         group: 3,
-        mnemonic: None,
+        mnemonic: "Des serviettes sèchent sur le séchoir à linge : « sè-che » (se)",
     },
     Kana {
         kana: "そ",
         romaji: &["so"],
         group: 3,
-        mnemonic: None,
+        mnemonic: "Un chat roulé en boule fait un somme sous un grand « Z » : « so-mme » (so)",
     },
     // group 4: t
     Kana {
         kana: "た",
         romaji: &["ta"],
         group: 4,
-        mnemonic: Some("On y lit un « t » suivi d'un « a » : ta."),
+        mnemonic: "Deux baguettes croisées frappent un tambour : « ta-ta-ta ! » (ta)",
     },
     Kana {
         kana: "ち",
         romaji: &["chi", "ti"],
         group: 4,
-        mnemonic: Some(
-            "Ressemble au chiffre 5, le ventre à droite : chi. (さ s'ouvre comme un « c ».)",
-        ),
+        mnemonic: "Un litchi bien rond pend à sa branche : « li-tchi » (chi/ti) (Ventre à droite comme un 5 ; さ s'ouvre comme un « c ».)",
     },
     Kana {
         kana: "つ",
         romaji: &["tsu", "tu"],
         group: 4,
-        mnemonic: Some("Une vague qui déferle : tsunami, tsu."),
+        mnemonic: "Un croissant de lune ; la lune se dit « tsuki » en japonais : tsu (tsu/tu)",
     },
     Kana {
         kana: "て",
         romaji: &["te"],
         group: 4,
-        mnemonic: Some("Un bras tendu : « tiens ! », te."),
+        mnemonic: "La cabine d'un téléphérique pend à son câble : « té-lé » (te)",
     },
     Kana {
         kana: "と",
         romaji: &["to"],
         group: 4,
-        mnemonic: Some("Un orteil (« toe ») avec une écharde : to."),
+        mnemonic: "Une taupe creuse son tunnel sous une carotte : « taupe » (to)",
     },
     // group 5: n
     Kana {
         kana: "な",
         romaji: &["na"],
         group: 5,
-        mnemonic: None,
+        mnemonic: "Un épouvantail garde un gros navet dans le potager : « na-vet » (na)",
     },
     Kana {
         kana: "に",
         romaji: &["ni"],
         group: 5,
-        mnemonic: Some("Un trait vertical suivi de こ : ni."),
+        mnemonic: "Un nid plein d'oisillons contre le tronc d'un arbre : « nid » (ni) (Sans le tronc vertical, c'est こ : ko.)",
     },
     Kana {
         kana: "ぬ",
         romaji: &["nu"],
         group: 5,
-        mnemonic: Some(
-            "Des nouilles emmêlées avec une boucle au bout : nu. (め n'a pas de boucle.)",
-        ),
+        mnemonic: "Un ruban bien noué sur un cadeau, avec une petite boucle au bout : « nou-é » (nu) (め n'a pas de boucle.)",
     },
     Kana {
         kana: "ね",
         romaji: &["ne"],
         group: 5,
-        mnemonic: Some(
-            "Un chat (« neko ») qui enroule sa queue : ne. (れ et わ n'ont pas de boucle.)",
-        ),
+        mnemonic: "Nessie, le monstre du Loch Ness, sort son long cou et sa bosse du lac : « Né-ssie » (ne) (れ et わ n'ont pas de boucle.)",
     },
     Kana {
         kana: "の",
         romaji: &["no"],
         group: 5,
-        mnemonic: Some("Un panneau d'interdiction : no !"),
+        mnemonic: "La coquille enroulée d'un nautile : « nau-tile » (no)",
     },
     // group 6: h
     Kana {
         kana: "は",
         romaji: &["ha"],
         group: 6,
-        mnemonic: Some("Un trait, puis une croix avec une boucle : ha. (ほ a un toit en plus.)"),
+        mnemonic: "Une ligne de pêche plonge dans l'étang, l'hameçon en boucle au bout : un poisson s'écrie « Ha ! » (ha) (ほ a un toit en plus.)",
     },
     Kana {
         kana: "ひ",
         romaji: &["hi"],
         group: 6,
-        mnemonic: Some("Un grand sourire : hi hi !"),
+        mnemonic: "Un hibou se blottit au creux de son nid tout rond : « hi »bou (hi)",
     },
     Kana {
         kana: "ふ",
         romaji: &["fu", "hu"],
         group: 6,
-        mnemonic: Some("Le mont Fuji entouré de nuages : fu."),
+        mnemonic: "Un feu de camp s'allume d'un coup : « Fouf ! » (fu/hu)",
     },
     Kana {
         kana: "へ",
         romaji: &["he"],
         group: 6,
-        mnemonic: Some("Une petite colline : « hé, je l'ai grimpée ! », he."),
+        mnemonic: "Un hérisson fait le gros dos : « Hé, pas touche ! » (he)",
     },
     Kana {
         kana: "ほ",
         romaji: &["ho"],
         group: 6,
-        mnemonic: Some("Comme は, avec un toit en plus : ho."),
+        mnemonic: "Un scout hisse le drapeau entre les deux barres : « Oh hisse ! » (ho) (は n'a qu'une barre, pas de toit.)",
     },
     // group 7: m
     Kana {
         kana: "ま",
         romaji: &["ma"],
         group: 7,
-        mnemonic: None,
+        mnemonic: "Le grand mât d'un voilier, avec ses deux vergues et sa voile : « ma »t (ma)",
     },
     Kana {
         kana: "み",
         romaji: &["mi"],
         group: 7,
-        mnemonic: None,
+        mnemonic: "Un chaton joue avec une pelote de laine qui se déroule : « Miaou ! » (mi)",
     },
     Kana {
         kana: "む",
         romaji: &["mu"],
         group: 7,
-        mnemonic: None,
+        mnemonic: "Un moulin à vent sur sa colline, les ailes en croix : « mou »lin (mu)",
     },
     Kana {
         kana: "め",
         romaji: &["me"],
         group: 7,
-        mnemonic: Some("Un œil (« me » en japonais), sans boucle au bout. (ぬ a une boucle.)"),
+        mnemonic: "Une méduse ondule, ses tentacules emmêlés : « mé »duse (me) (ぬ a une boucle au bout.)",
     },
     Kana {
         kana: "も",
         romaji: &["mo"],
         group: 7,
-        mnemonic: None,
+        mnemonic: "Il ne reste de la morue que la tête et les arêtes : « mo »rue (mo)",
     },
     // group 8: y
     Kana {
         kana: "や",
         romaji: &["ya"],
         group: 8,
-        mnemonic: Some("Un yak avec ses cornes : ya."),
+        mnemonic: "Un « ya »cht file au vent, le mât penché, la voile gonflée et le fanion au sommet (ya)",
     },
     Kana {
         kana: "ゆ",
         romaji: &["yu"],
         group: 8,
-        mnemonic: None,
+        mnemonic: "Une yourte ronde, son mât central dépasse du toit et fume : « you »rte (yu)",
     },
     Kana {
         kana: "よ",
         romaji: &["yo"],
         group: 8,
-        mnemonic: Some("Un yo-yo au bout de sa ficelle : yo."),
+        mnemonic: "Un yogi assis en tailleur, le dos bien droit, tend le bras : « yo »ga (yo)",
     },
     // group 9: r
     Kana {
         kana: "ら",
         romaji: &["ra"],
         group: 9,
-        mnemonic: None,
+        mnemonic: "Un rat dodu dresse la queue devant un fromage : « ra » ! (ra)",
     },
     Kana {
         kana: "り",
         romaji: &["ri"],
         group: 9,
-        mnemonic: Some(
-            "Deux traits, celui de droite bien plus long : ri. (い a deux traits presque égaux.)",
-        ),
+        mnemonic: "Deux baguettes plongent dans un bol de riz, celle de droite plus longue : « ri » (ri) (い a deux traits presque égaux.)",
     },
     Kana {
         kana: "る",
         romaji: &["ru"],
         group: 9,
-        mnemonic: Some("Une route qui finit en rond-point : ru. (ろ n'a pas de boucle.)"),
+        mnemonic: "Une gymnaste fait tourbillonner son ruban, qui finit par une petite boucle : « ru »ban (ru) (ろ n'a pas de boucle.)",
     },
     Kana {
         kana: "れ",
         romaji: &["re"],
         group: 9,
-        mnemonic: Some("La fin part vers l'extérieur, comme une jambe : re. (わ revient en rond.)"),
+        mnemonic: "Un renne tend sa patte arrière vers l'extérieur : « re »nne (re) (わ revient en rond.)",
     },
     Kana {
         kana: "ろ",
         romaji: &["ro"],
         group: 9,
-        mnemonic: Some("Comme る, mais sans boucle : ro."),
+        mnemonic: "Bien calé, le ventre tout rond, un gourmand lâche un rot : « Rôô ! » (ro) (る a une boucle en plus.)",
     },
     // group 10: w + n
     Kana {
         kana: "わ",
         romaji: &["wa"],
         group: 10,
-        mnemonic: Some(
-            "La fin revient en rond : wa. (れ part vers l'extérieur, ね finit par une boucle.)",
-        ),
+        mnemonic: "Un chien assis, le dos tout rond, aboie : « Ouah ! » (wa) (れ tend la patte vers l'extérieur, ね finit par une boucle.)",
     },
     Kana {
         kana: "を",
         romaji: &["wo", "o"],
         group: 10,
-        mnemonic: None,
+        mnemonic: "Un skateur s'envole sur sa planche : « Wo-ho ! » (wo/o)",
     },
     Kana {
         kana: "ん",
         romaji: &["n", "nn"],
         group: 10,
-        mnemonic: Some("Un « n » minuscule écrit à la va-vite : n."),
+        mnemonic: "Un gourmand aspire une longue nouille au-dessus du bol : « Nnn ! » (n/nn)",
     },
 ];
 
@@ -318,306 +302,286 @@ pub const KATAKANA: &[Kana] = &[
         kana: "ア",
         romaji: &["a"],
         group: 1,
-        mnemonic: None,
+        mnemonic: "Un enfant dévale le grand toboggan en criant « Aaah ! » (a)",
     },
     Kana {
         kana: "イ",
         romaji: &["i"],
         group: 1,
-        mnemonic: None,
+        mnemonic: "Un palmier pousse sur une petite île : le trait penché est sa grande palme, le trait droit son tronc. « Île » (i)",
     },
     Kana {
         kana: "ウ",
         romaji: &["u"],
         group: 1,
-        mnemonic: Some("Comme う, avec un petit trait sur la tête : u. (ワ n'a pas ce trait.)"),
+        mnemonic: "Un hibou sur sa branche, une petite plume dressée sur la tête, hulule « Hou ! » (u) (ワ n'a pas cette plume sur la tête.)",
     },
     Kana {
         kana: "エ",
         romaji: &["e"],
         group: 1,
-        mnemonic: None,
+        mnemonic: "Un éléphant de cirque tient en équilibre sur son piédestal : « éléphant » (e)",
     },
     Kana {
         kana: "オ",
         romaji: &["o"],
         group: 1,
-        mnemonic: None,
+        mnemonic: "Un voilier avec son mât, sa vergue et sa voile en triangle : « Ohé, bateau ! » (o)",
     },
     // group 2: k
     Kana {
         kana: "カ",
         romaji: &["ka"],
         group: 2,
-        mnemonic: None,
+        mnemonic: "Une canne à pêche posée sur la berge : le fil plonge dans l'eau et finit en hameçon. « Canne » (ka)",
     },
     Kana {
         kana: "キ",
         romaji: &["ki"],
         group: 2,
-        mnemonic: None,
+        mnemonic: "Au ski, un poteau planté dans la neige porte deux panneaux de piste : « ski » (ki)",
     },
     Kana {
         kana: "ク",
         romaji: &["ku"],
         group: 2,
-        mnemonic: Some(
-            "Comme く avec un petit toit : ku. (タ a un trait en plus dedans, ケ une barre qui dépasse.)",
-        ),
+        mnemonic: "Un oiseau ouvre grand le bec pour chanter « Coucou ! » (ku) (ケ a une barre qui dépasse, タ un trait en plus dedans.)",
     },
     Kana {
         kana: "ケ",
         romaji: &["ke"],
         group: 2,
-        mnemonic: Some(
-            "Une barre qui dépasse à droite, avec une jambe qui descend : ke. (ク n'a pas de barre.)",
-        ),
+        mnemonic: "Au port, le ponton du quai dépasse au-dessus de l'eau : « quai » (ke) (ク n'a pas de barre qui dépasse.)",
     },
     Kana {
         kana: "コ",
         romaji: &["ko"],
         group: 2,
-        mnemonic: Some(
-            "Un carré ouvert à gauche, net et fermé : ko. (ユ a la barre du bas qui dépasse.)",
-        ),
+        mnemonic: "Un cochon dans son enclos bien fermé, ouvert seulement à gauche : « cochon » (ko) (ユ a la barre du bas qui dépasse.)",
     },
     // group 3: s
     Kana {
         kana: "サ",
         romaji: &["sa"],
         group: 3,
-        mnemonic: None,
+        mnemonic: "Un mouton saute la barrière du pré : « Saute ! » (sa)",
     },
     Kana {
         kana: "シ",
         romaji: &["shi", "si"],
         group: 3,
-        mnemonic: Some(
-            "Les deux petits traits sont à gauche, l'un sous l'autre, et le grand remonte depuis le bas : shi. (ツ a ses petits traits en haut.)",
-        ),
+        mnemonic: "Des baguettes remontent un sushi depuis le bas ; deux gouttes de sauce soja tombent à gauche : « sushi » (shi/si) (ツ a ses petits traits en haut.)",
     },
     Kana {
         kana: "ス",
         romaji: &["su"],
         group: 3,
-        mnemonic: Some("Un tabouret à deux pieds écartés : su. (ヌ a un trait qui le traverse.)"),
+        mnemonic: "Un sumo, bras tendus et jambes bien écartées : « sumo » (su) (ヌ a un trait qui le traverse.)",
     },
     Kana {
         kana: "セ",
         romaji: &["se"],
         group: 3,
-        mnemonic: None,
+        mnemonic: "Au puits, un seau pend au crochet de la potence : « seau » (se)",
     },
     Kana {
         kana: "ソ",
         romaji: &["so"],
         group: 3,
-        mnemonic: Some(
-            "Le grand trait descend depuis le haut, comme une goutte qui tombe : so. (ン remonte.)",
-        ),
+        mnemonic: "Une bouteille de soda se renverse : le jet descend depuis le haut, une goutte gicle à côté. « Soda » (so) (ン remonte depuis le bas.)",
     },
     // group 4: t
     Kana {
         kana: "タ",
         romaji: &["ta"],
         group: 4,
-        mnemonic: Some("ク avec un petit trait ajouté à l'intérieur : ta."),
+        mnemonic: "Une part de tarte soulevée sur sa pelle ; le petit trait en plus ferme la part : « tarte » (ta) (ク n'a pas ce trait.)",
     },
     Kana {
         kana: "チ",
         romaji: &["chi", "ti"],
         group: 4,
-        mnemonic: Some(
-            "Ressemble à ち, et le trait du milieu traverse la barre : chi. (テ a deux barres séparées.)",
-        ),
+        mnemonic: "Un piment chili pend à sa branche, et sa queue traverse la branche : « chili » (chi/ti) (テ a deux barres séparées, rien ne les traverse.)",
     },
     Kana {
         kana: "ツ",
         romaji: &["tsu", "tu"],
         group: 4,
-        mnemonic: Some(
-            "Les deux petits traits sont côte à côte en haut, et le grand descend depuis le haut : tsu. (シ a ses petits traits à gauche.)",
-        ),
+        mnemonic: "Un tsunami : la grande vague retombe depuis le haut, deux paquets d'eau volent côte à côte au-dessus. « Tsunami » (tsu/tu) (シ a ses petits traits à gauche.)",
     },
     Kana {
         kana: "テ",
         romaji: &["te"],
         group: 4,
-        mnemonic: Some(
-            "Deux barres et un pied qui descend, comme une table : te. (チ a un trait qui traverse.)",
-        ),
+        mnemonic: "Une antenne de télé sur le toit : deux barres séparées et un mât qui descend. « Télé » (te) (チ a un trait qui traverse la barre.)",
     },
     Kana {
         kana: "ト",
         romaji: &["to"],
         group: 4,
-        mnemonic: None,
+        mnemonic: "Un plant de tomate : la tige droite et une branche d'où pend une tomate. « Tomate » (to)",
     },
     // group 5: n
     Kana {
         kana: "ナ",
         romaji: &["na"],
         group: 5,
-        mnemonic: None,
+        mnemonic: "Un katana : la poignée en haut, la garde en travers et la lame courbe en dessous. « Katana » (na)",
     },
     Kana {
         kana: "ニ",
         romaji: &["ni"],
         group: 5,
-        mnemonic: None,
+        mnemonic: "Deux branches l'une sur l'autre, avec un nid sur celle du bas : « nid » (ni)",
     },
     Kana {
         kana: "ヌ",
         romaji: &["nu"],
         group: 5,
-        mnemonic: Some(
-            "Comme ス, mais traversé par un trait, comme une nouille piquée par une baguette : nu.",
-        ),
+        mnemonic: "Une longue nouille soulevée du bol, traversée par une baguette : « nouille » (nu) (ス n'a pas de trait qui le traverse.)",
     },
     Kana {
         kana: "ネ",
         romaji: &["ne"],
         group: 5,
-        mnemonic: None,
+        mnemonic: "Un petit arbre sous la neige, sa branche plie sous le poids : « neige » (ne)",
     },
     Kana {
         kana: "ノ",
         romaji: &["no"],
         group: 5,
-        mnemonic: None,
+        mnemonic: "La nuit de Noël, le traîneau descend du ciel en laissant une traînée dorée : « Noël » (no)",
     },
     // group 6: h
     Kana {
         kana: "ハ",
         romaji: &["ha"],
         group: 6,
-        mnemonic: None,
+        mnemonic: "D'un coup de hache, la bûche se fend en deux moitiés qui s'écartent : « Ha ! » (ha)",
     },
     Kana {
         kana: "ヒ",
         romaji: &["hi"],
         group: 6,
-        mnemonic: None,
+        mnemonic: "Un hibou s'est perché sur la branche de l'arbre mort : hi-bou ! (hi)",
     },
     Kana {
         kana: "フ",
         romaji: &["fu", "hu"],
         group: 6,
-        mnemonic: None,
+        mnemonic: "Le dompteur fait claquer son fouet devant le lion : « Fou-et ! » (fu/hu)",
     },
     Kana {
         kana: "ヘ",
         romaji: &["he"],
         group: 6,
-        mnemonic: None,
+        mnemonic: "Au sommet de la montagne, le randonneur crie « Hé ! » et l'écho lui répond. (he)",
     },
     Kana {
         kana: "ホ",
         romaji: &["ho"],
         group: 6,
-        mnemonic: None,
+        mnemonic: "Bras écartés, l'épouvantail chasse les corbeaux : « Ho ! Ho ! » (ho)",
     },
     // group 7: m
     Kana {
         kana: "マ",
         romaji: &["ma"],
         group: 7,
-        mnemonic: None,
+        mnemonic: "L'enfant tend son cornet surmonté d'une boule à la fraise : « Ma glace ! » (ma)",
     },
     Kana {
         kana: "ミ",
         romaji: &["mi"],
         group: 7,
-        mnemonic: None,
+        mnemonic: "Le chat a laissé trois griffures sur le canapé : « Miaou ! » (mi)",
     },
     Kana {
         kana: "ム",
         romaji: &["mu"],
         group: 7,
-        mnemonic: None,
+        mnemonic: "Sous ce grand nez pointu pousse une belle moustache : « Mou-stache ! » (mu)",
     },
     Kana {
         kana: "メ",
         romaji: &["me"],
         group: 7,
-        mnemonic: None,
+        mnemonic: "Le mouton saute par-dessus la barrière en croix : « Mêêê ! » (me)",
     },
     Kana {
         kana: "モ",
         romaji: &["mo"],
         group: 7,
-        mnemonic: None,
+        mnemonic: "Dans l'assiette, il ne reste que la tête et les arêtes de la morue : mo ! (mo)",
     },
     // group 8: y
     Kana {
         kana: "ヤ",
         romaji: &["ya"],
         group: 8,
-        mnemonic: None,
+        mnemonic: "Penché sous sa voile, le véliplanchiste fonce sur la vague : « Yaaa ! » (ya)",
     },
     Kana {
         kana: "ユ",
         romaji: &["yu"],
         group: 8,
-        mnemonic: Some("Un « U » couché dont la barre du bas dépasse : yu. (コ ne dépasse pas.)"),
+        mnemonic: "Agrippé à la poignée de sa luge aux longs patins qui dépassent, l'enfant file dans la neige : « You-pi ! » (yu) (ユ a la barre du bas qui dépasse, コ non.)",
     },
     Kana {
         kana: "ヨ",
         romaji: &["yo"],
         group: 8,
-        mnemonic: None,
+        mnemonic: "Sur l'étagère fixée au mur, on range ses yo-yos : yo ! (yo)",
     },
     // group 9: r
     Kana {
         kana: "ラ",
         romaji: &["ra"],
         group: 9,
-        mnemonic: None,
+        mnemonic: "Un rat assis sur l'étagère lorgne le fromage, sa longue queue pend jusqu'en bas : ra ! (ra)",
     },
     Kana {
         kana: "リ",
         romaji: &["ri"],
         group: 9,
-        mnemonic: None,
+        mnemonic: "Le vent gonfle les deux rideaux de la fenêtre, un court et un long : ri-deaux ! (ri)",
     },
     Kana {
         kana: "ル",
         romaji: &["ru"],
         group: 9,
-        mnemonic: None,
+        mnemonic: "Un coureur file à grandes enjambées dans la rue : ru ! (ru)",
     },
     Kana {
         kana: "レ",
         romaji: &["re"],
         group: 9,
-        mnemonic: None,
+        mnemonic: "Allongé sur son transat, il rêve d'une île au soleil : rê-ve ! (re)",
     },
     Kana {
         kana: "ロ",
         romaji: &["ro"],
         group: 9,
-        mnemonic: None,
+        mnemonic: "Ce robot a une tête toute carrée : ro-bot ! (ro)",
     },
     // group 10: w + n
     Kana {
         kana: "ワ",
         romaji: &["wa"],
         group: 10,
-        mnemonic: Some("Comme ウ sans le petit trait du haut, et proche de わ : wa."),
+        mnemonic: "Le wagonnet arrive en haut des montagnes russes et bascule dans la descente : « Waaah ! » (wa) (ウ a un petit trait sur la tête, ワ non.)",
     },
     Kana {
         kana: "ヲ",
         romaji: &["wo", "o"],
         group: 10,
-        mnemonic: None,
+        mnemonic: "Du haut du toboggan, l'enfant glisse et plonge dans l'eau : « Oh ! » (wo/o)",
     },
     Kana {
         kana: "ン",
         romaji: &["n", "nn"],
         group: 10,
-        mnemonic: Some(
-            "Le grand trait remonte depuis le bas, comme un sourire en coin : n. (ソ descend.)",
-        ),
+        mnemonic: "Clin d'œil et sourire en coin qui remonte vers la droite : « Hmm ! » (n/nn) (ン remonte, ソ descend.)",
     },
 ];
 
@@ -641,7 +605,7 @@ pub const CONFUSABLES: &[&[&str]] = &[
 ];
 
 /// Which syllabary to study. Each one has its own table and its own deck.
-#[derive(Clone, Copy, ValueEnum)]
+#[derive(Clone, Copy, PartialEq, ValueEnum)]
 pub enum Script {
     Hiragana,
     Katakana,
@@ -697,13 +661,20 @@ mod tests {
     }
 
     #[test]
-    fn every_look_alike_exists_and_has_a_mnemonic() {
+    fn every_look_alike_exists() {
         let all: Vec<&Kana> = HIRAGANA.iter().chain(KATAKANA).collect();
         for set in CONFUSABLES {
             for &kana in *set {
-                let k = all.iter().find(|k| k.kana == kana);
-                assert!(k.is_some_and(|k| k.mnemonic.is_some()), "{kana}");
+                assert!(all.iter().any(|k| k.kana == kana), "{kana}");
             }
+        }
+    }
+
+    #[test]
+    fn every_mnemonic_names_the_sound() {
+        for k in HIRAGANA.iter().chain(KATAKANA) {
+            let sound = format!("({})", k.romaji.join("/"));
+            assert!(k.mnemonic.contains(&sound), "{}: {}", k.kana, k.mnemonic);
         }
     }
 }

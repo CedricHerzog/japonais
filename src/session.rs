@@ -13,10 +13,10 @@ use crate::kana::{self, Kana, Script};
 use crate::storage;
 
 /// A right answer typed faster than this is rated Easy instead of Good.
-const FAST: Duration = Duration::from_secs(3);
+pub const FAST: Duration = Duration::from_secs(3);
 
 /// Direction of the questions.
-#[derive(Clone, Copy, ValueEnum)]
+#[derive(Clone, Copy, PartialEq, ValueEnum)]
 pub enum Mode {
     /// Kana → romaji : tu tapes la réponse
     Normal,
@@ -43,8 +43,80 @@ impl fmt::Display for Summary {
     }
 }
 
-/// Runs a review session on the due cards (plus look-alikes) and saves after each answer.
-/// With `ahead`, every unlocked card is asked once, like Anki's "Review ahead".
+/// The rules of a review session, shared by the terminal and the GUI:
+/// which card comes next, and what an answer does.
+pub struct Session {
+    ahead: bool,
+    kanas: Vec<&'static str>, // kana of each card, by index in `cards`
+    index: HashMap<&'static str, usize>, // and the reverse, to find look-alikes
+    asked: HashSet<usize>,
+    extras: HashSet<usize>, // look-alikes added to this session
+    pub summary: Summary,
+}
+
+impl Session {
+    /// With `ahead`, every unlocked card is asked once, like Anki's "Review ahead".
+    pub fn new(cards: &[Card], script: Script, ahead: bool) -> Session {
+        let kanas: Vec<&'static str> = cards.iter().map(|c| script.table()[c.id].kana).collect();
+        Session {
+            ahead,
+            index: kanas.iter().enumerate().map(|(i, &k)| (k, i)).collect(),
+            kanas,
+            asked: HashSet::new(),
+            extras: HashSet::new(),
+            summary: Summary::default(),
+        }
+    }
+
+    /// A random card to ask next (an index in `cards`), or None when the session is over.
+    pub fn next(&self, cards: &[Card], today: NaiveDate) -> Option<usize> {
+        let pool: Vec<usize> = (0..cards.len())
+            .filter(|&i| {
+                cards[i].is_due(today)
+                    || self.extras.contains(&i)
+                    || (self.ahead && !self.asked.contains(&i))
+            })
+            .collect();
+        if pool.is_empty() {
+            return None;
+        }
+        Some(pool[rand::rng().random_range(0..pool.len())])
+    }
+
+    /// Records the answer to card `x`, and queues its unlocked look-alikes.
+    pub fn record(&mut self, cards: &mut [Card], x: usize, outcome: Outcome, today: NaiveDate) {
+        self.summary.asked += 1;
+        let before = cards[x].stability();
+        if outcome != Outcome::Wrong {
+            self.summary.correct += 1;
+        }
+        // A look-alike asked early keeps its schedule when right. In ahead mode
+        // every answer counts: FSRS gives an early success only a small gain.
+        if outcome == Outcome::Wrong || cards[x].is_due(today) || self.ahead {
+            cards[x].answer(outcome, today);
+        }
+        if outcome != Outcome::Wrong && cards[x].stability() > before {
+            self.summary.strengthened += 1;
+        }
+
+        self.asked.insert(x);
+        self.extras.remove(&x);
+        for other in kana::look_alikes(self.kanas[x]) {
+            if let Some(&i) = self.index.get(other)
+                && !self.asked.contains(&i)
+            {
+                self.extras.insert(i);
+            }
+        }
+    }
+
+    pub fn finish(mut self, cards: &[Card]) -> Summary {
+        self.summary.next_review = cards.iter().map(|c| c.next_study).min();
+        self.summary
+    }
+}
+
+/// Runs a review session in the terminal and saves after each answer.
 pub fn run(
     cards: &mut [Card],
     script: Script,
@@ -52,72 +124,24 @@ pub fn run(
     mode: Mode,
     ahead: bool,
 ) -> Summary {
-    let table = script.table();
-    let mut summary = Summary::default();
-    if !ahead && !cards.iter().any(|c| c.is_due(today)) {
+    let mut session = Session::new(cards, script, ahead);
+    if session.next(cards, today).is_none() {
         println!("Rien à réviser pour l'instant.");
         println!("Pour réviser quand même : « kana revision --avance ».");
-        summary.next_review = cards.iter().map(|c| c.next_study).min();
-        return summary;
+        return session.finish(cards);
     }
 
-    // kana → index in `cards`, to find look-alikes quickly
-    let index: HashMap<&str, usize> = cards
-        .iter()
-        .enumerate()
-        .map(|(i, c)| (table[c.id].kana, i))
-        .collect();
-    let mut asked: HashSet<usize> = HashSet::new();
-    let mut extras: HashSet<usize> = HashSet::new(); // look-alikes added to this session
-
-    loop {
-        let pool: Vec<usize> = (0..cards.len())
-            .filter(|&i| {
-                cards[i].is_due(today) || extras.contains(&i) || (ahead && !asked.contains(&i))
-            })
-            .collect();
-        if pool.is_empty() {
-            println!("Session terminée !");
-            break;
-        }
-
-        let x = pool[rand::rng().random_range(0..pool.len())];
-        let to_guess = &table[cards[x].id];
-        let Some(outcome) = ask(to_guess, mode) else {
-            break;
+    while let Some(x) = session.next(cards, today) {
+        let Some(outcome) = ask(&script.table()[cards[x].id], mode) else {
+            return session.finish(cards);
         };
-
-        summary.asked += 1;
-        let before = cards[x].stability();
-        if outcome != Outcome::Wrong {
-            summary.correct += 1;
-        }
-        // A look-alike asked early keeps its schedule when right. In ahead mode
-        // every answer counts: FSRS gives an early success only a small gain.
-        if outcome == Outcome::Wrong || cards[x].is_due(today) || ahead {
-            cards[x].answer(outcome, today);
-        }
-        if outcome != Outcome::Wrong && cards[x].stability() > before {
-            summary.strengthened += 1;
-        }
-
-        asked.insert(x);
-        extras.remove(&x);
-        for other in kana::look_alikes(to_guess.kana) {
-            if let Some(&i) = index.get(other)
-                && !asked.contains(&i)
-            {
-                extras.insert(i);
-            }
-        }
-
+        session.record(cards, x, outcome, today);
         if let Err(e) = storage::save(script, cards) {
             println!("Erreur de sauvegarde : {e}");
         }
     }
-
-    summary.next_review = cards.iter().map(|c| c.next_study).min();
-    summary
+    println!("Session terminée !");
+    session.finish(cards)
 }
 
 /// Asks one question. Returns the outcome, or None if the user quits.
@@ -166,9 +190,7 @@ fn ask(k: &Kana, mode: Mode) -> Option<Outcome> {
 }
 
 fn show_mnemonic(k: &Kana) {
-    if let Some(mnemonic) = k.mnemonic {
-        println!("  {} {}", "Astuce :".yellow(), mnemonic.italic());
-    }
+    println!("  {} {}", "Astuce :".yellow(), k.mnemonic.italic());
 }
 
 /// Reads one trimmed, lowercase line. None on end of input, read error, or "q".
@@ -180,5 +202,53 @@ pub fn read_line() -> Option<String> {
             let line = input.trim().to_lowercase();
             if line == "q" { None } else { Some(line) }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::card::unlock_next_group;
+
+    fn day() -> NaiveDate {
+        NaiveDate::from_ymd_opt(2026, 1, 1).unwrap()
+    }
+
+    /// Group 1, every card answered right today (so nothing is due).
+    fn learned_deck() -> Vec<Card> {
+        let mut cards = Vec::new();
+        unlock_next_group(&mut cards, Script::Hiragana.table(), day());
+        for card in cards.iter_mut() {
+            card.answer(Outcome::Correct, day());
+        }
+        cards
+    }
+
+    #[test]
+    fn nothing_due_means_no_question() {
+        let cards = learned_deck();
+        let session = Session::new(&cards, Script::Hiragana, false);
+        assert_eq!(session.next(&cards, day()), None);
+    }
+
+    #[test]
+    fn ahead_asks_every_card_once() {
+        let mut cards = learned_deck();
+        let mut session = Session::new(&cards, Script::Hiragana, true);
+        let mut seen = HashSet::new();
+        while let Some(x) = session.next(&cards, day()) {
+            assert!(seen.insert(x), "card asked twice");
+            session.record(&mut cards, x, Outcome::Correct, day());
+        }
+        assert_eq!(seen.len(), cards.len());
+    }
+
+    #[test]
+    fn wrong_answer_comes_back() {
+        let mut cards = learned_deck();
+        let mut session = Session::new(&cards, Script::Hiragana, false);
+        session.record(&mut cards, 0, Outcome::Wrong, day());
+        assert_eq!(session.next(&cards, day()), Some(0));
+        assert_eq!(session.summary.correct, 0);
     }
 }

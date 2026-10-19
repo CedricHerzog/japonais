@@ -74,6 +74,28 @@ impl Card {
     }
 }
 
+/// Counts cards by stability: how many days they stay 90% remembered.
+pub fn stability_buckets(cards: &[Card]) -> [(&'static str, usize); 5] {
+    let bounds = [
+        ("< 3 j", 0.0, 3.0),
+        ("3–7 j", 3.0, 7.0),
+        ("7–21 j", 7.0, 21.0),
+        ("21 j +", 21.0, f64::INFINITY),
+    ];
+    let count = |min: f64, max: f64| {
+        cards
+            .iter()
+            .filter(|c| {
+                c.memory
+                    .is_some_and(|m| min <= m.stability && m.stability < max)
+            })
+            .count()
+    };
+    let new = cards.iter().filter(|c| c.memory.is_none()).count();
+    let [a, b, c, d] = bounds.map(|(label, min, max)| (label, count(min, max)));
+    [("Nouveaux", new), a, b, c, d]
+}
+
 /// Adds the next group's cards if every card of the current group is stable enough.
 /// Returns the unlocked group number, if any.
 pub fn unlock_next_group(cards: &mut Vec<Card>, table: &[Kana], today: NaiveDate) -> Option<u8> {

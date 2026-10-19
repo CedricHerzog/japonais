@@ -11,7 +11,7 @@ A command-line app, with its interface in French, for learning hiragana and late
 | **Retrieval practice** (recalling an answer rather than rereading it) and **distributed practice** are the two techniques that Dunlosky et al. (2013) rated "high utility". A meta-analysis of 29 studies found spaced retrieval beat massed retrieval with g = 0.74. | Every exercise asks you to *type* the answer, with no multiple choice. Reviews are scheduled at growing intervals (spaced repetition). |
 | The best spacing pattern is still debated: some studies favour expanding intervals and others the opposite. Schedulers that model each card's memory, such as **FSRS**, predict forgetting better than SM-2 or fixed boxes on large public review datasets, and FSRS is now Anki's default. | Started with Leitner boxes (Steps 3–8), then moved to FSRS (Step 9): each card gets its own interval, set so you review it when recall drops to about 90%. |
 | **Interleaving** helps people tell apart categories that look alike (Brunmair & Richter 2019, 59 studies, g = 0.42, strongest with visual material). | Once a set of characters is known, mix the look-alikes in the same session: さ/ち, ぬ/め, ね/れ/わ, る/ろ, は/ほ, and later シ/ツ, ソ/ン. |
-| **Image mnemonics** have mixed evidence for kana. They help motivation and pass rates more than raw recall. | Show an optional French mnemonic, but only *after* a wrong answer. It is a support, not the method. |
+| **Image mnemonics** have mixed evidence for kana. They help motivation and pass rates more than raw recall. | Each kana has an illustrated card (Tofugu-style: the kana's shape *is* the object, and its name carries the sound) with a French mnemonic. It is shown when a kana is first introduced and after a wrong answer, never instead of recalling. It is a support, not the method. |
 | Learning a little at a time works best, and immediate feedback helps. | New characters arrive in groups of 5 (one gojūon row). The next group opens only when the current one is stable. Each answer is marked right or wrong straight away. |
 
 **What this means for your daily practice:** 10–15 minutes a day, every day. Do the app's reviews first, then write each new character by hand on paper (the app can't check handwriting).
@@ -98,6 +98,11 @@ Each step names the Rust concepts it teaches.
 - **Review ahead:** when nothing is due, `kana revision` says so and suggests `kana revision --avance`, which asks every unlocked card once (Anki's "Custom Study → Review ahead"). Answers still count: FSRS uses the real elapsed time, so an early success adds only a little stability and the schedule stays sound. Waiting for the due date remains the efficient default.
 - **Rust:** `f64`, the `From` trait, serde enums, data migration.
 
+### Step 10: Illustrated cards and GUI ✅
+- **Done:** 92 SVG cards in `assets/cards/{hiragana,katakana}/`. The kana's outline (from the Klee One font, extracted by `examples/glyphs.rs`) is the main object of a small scene whose name sounds like the reading: う is a surfer above a curling wave (« Ouh ! »), き a kimono, ツ a tsunami. `Kana.mnemonic` is now a `&'static str` that describes the picture for all 92 kana. `src/images.rs` embeds the cards with a `macro_rules!` + `include_bytes!`. The scheduling rules moved from the stdin loop into `session::Session` (`new` / `next` / `record` / `finish`), which both the terminal and the GUI use. `kana gui` opens an egui window with four screens: Home (script, direction, stability bars, Réviser / Réviser en avance / Galerie), Review (a new kana is introduced with its card first; a wrong answer shows the card and the mnemonic; a right one moves on by itself), Done, and Galerie. 26 tests.
+- Lessons learned: implementing a trait from another crate (`ttf_parser::OutlineBuilder`); `examples/` for dev tools; `macro_rules!` with repetitions; an immediate-mode UI is a state machine, and `std::mem::replace` lets you move the current screen out of `self` and put the next one back; pulling the logic out of the I/O makes it testable and gives you two front-ends for free.
+- **Rust:** macros, `include_bytes!`, foreign traits, `enum` state machines. Crates: `eframe`/`egui`, `egui_extras` (SVG via resvg), `ttf-parser`.
+
 ---
 
 ## 4. Suggested project layout
@@ -105,20 +110,31 @@ Each step names the Rust concepts it teaches.
 ```
 kana/
 ├── Cargo.toml
+├── assets/
+│   ├── fonts/         # Klee One, subset to kana (SIL OFL)
+│   ├── glyphs/        # kana outlines as SVG paths
+│   └── cards/         # the 92 illustrated cards
+├── examples/
+│   └── glyphs.rs      # extracts the outlines from the font
 └── src/
     ├── main.rs        # CLI (clap)
-    ├── kana.rs        # data tables
+    ├── kana.rs        # data tables + mnemonics
     ├── card.rs        # Card, review outcomes, unlocking
     ├── fsrs.rs        # FSRS scheduling maths
-    ├── session.rs     # review loop
+    ├── session.rs     # session rules + terminal loop
+    ├── gui.rs         # egui window
+    ├── images.rs      # embedded cards
     └── storage.rs     # JSON save/load
 ```
 
 ## 5. Possible next steps
 - Tune FSRS weights to your own review history (needs a review log).
-- A TUI (`ratatui`) or a GUI, then kanji.
+- Dakuten (が, ぱ…) and combined sounds (きゃ…), then kanji.
 
 ---
+
+### Credits
+- Font: Klee One by The Klee Project Authors, SIL Open Font License 1.1 (`assets/fonts/OFL.txt`).
 
 ### Sources
 - Dunlosky et al. (2013), *Improving Students' Learning With Effective Learning Techniques*. Psychological Science in the Public Interest.

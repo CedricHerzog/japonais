@@ -7,6 +7,8 @@ use crate::session::Mode;
 
 mod card;
 mod fsrs;
+mod gui;
+mod images;
 mod kana;
 mod session;
 mod storage;
@@ -36,6 +38,8 @@ enum Command {
     },
     /// Affiche ta progression
     Stats,
+    /// Ouvre l'interface graphique, avec les cartes illustrées
+    Gui,
     /// Efface toute ta progression
     Reset,
 }
@@ -70,6 +74,11 @@ fn main() {
             stats(&cards, script, today);
         }
         Command::Reset => reset(script),
+        Command::Gui => {
+            if let Err(e) = gui::run() {
+                println!("Impossible d'ouvrir la fenêtre : {e}");
+            }
+        }
     }
 }
 
@@ -94,23 +103,8 @@ fn stats(cards: &[Card], script: Script, today: NaiveDate) {
         return;
     }
     println!("Kana débloqués : {}/{}", cards.len(), script.table().len());
-    // Cards grouped by stability: how many days they stay 90% remembered.
-    let buckets = [
-        ("Nouveaux", -1.0, 0.0),
-        ("< 3 j", 0.0, 3.0),
-        ("3–7 j", 3.0, 7.0),
-        ("7–21 j", 7.0, 21.0),
-        ("21 j +", 21.0, f64::INFINITY),
-    ];
     println!("Mémorisation (stabilité) :");
-    for (label, min, max) in buckets {
-        let n = cards
-            .iter()
-            .filter(|c| match c.memory {
-                None => min < 0.0,
-                Some(m) => min <= m.stability && m.stability < max,
-            })
-            .count();
+    for (label, n) in card::stability_buckets(cards) {
         println!("  {label:<9}: {n:<3} {}", "█".repeat(n));
     }
     let due = cards.iter().filter(|c| c.is_due(today)).count();
