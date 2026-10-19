@@ -12,7 +12,7 @@ use crate::card::{Card, Outcome};
 use crate::kana::{self, Kana, Script};
 use crate::storage;
 
-/// A right answer typed faster than this moves the card up two boxes.
+/// A right answer typed faster than this is rated Easy instead of Good.
 const FAST: Duration = Duration::from_secs(3);
 
 /// Direction of the questions.
@@ -28,14 +28,14 @@ pub enum Mode {
 pub struct Summary {
     pub asked: usize,
     pub correct: usize,
-    pub moved_up: usize,
+    pub strengthened: usize,
     pub next_review: Option<NaiveDate>,
 }
 
 impl fmt::Display for Summary {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "{} {}/{}", "Score :".bold(), self.correct, self.asked)?;
-        writeln!(f, "Cartes qui ont progressé : {}", self.moved_up)?;
+        writeln!(f, "Cartes renforcées : {}", self.strengthened)?;
         match self.next_review {
             Some(date) => write!(f, "Prochaine révision : {}", date.format("%d/%m/%Y")),
             None => write!(f, "Prochaine révision : aucune"),
@@ -72,7 +72,7 @@ pub fn run(cards: &mut [Card], script: Script, today: NaiveDate, mode: Mode) -> 
         };
 
         summary.asked += 1;
-        let before = cards[x].box_number;
+        let before = cards[x].stability();
         if outcome != Outcome::Wrong {
             summary.correct += 1;
         }
@@ -80,8 +80,8 @@ pub fn run(cards: &mut [Card], script: Script, today: NaiveDate, mode: Mode) -> 
         if outcome == Outcome::Wrong || cards[x].is_due(today) {
             cards[x].answer(outcome, today);
         }
-        if cards[x].box_number > before {
-            summary.moved_up += 1;
+        if outcome != Outcome::Wrong && cards[x].stability() > before {
+            summary.strengthened += 1;
         }
 
         asked.insert(x);

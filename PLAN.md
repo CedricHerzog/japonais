@@ -9,7 +9,7 @@ A command-line app, with its interface in French, for learning hiragana and late
 | Evidence | What the app does |
 |---|---|
 | **Retrieval practice** (recalling an answer rather than rereading it) and **distributed practice** are the two techniques that Dunlosky et al. (2013) rated "high utility". A meta-analysis of 29 studies found spaced retrieval beat massed retrieval with g = 0.74. | Every exercise asks you to *type* the answer, with no multiple choice. Reviews are scheduled at growing intervals (spaced repetition). |
-| The best spacing pattern is still debated: some studies favour expanding intervals and others the opposite. | Use a simple expanding schedule (Leitner boxes). Don't try to optimise it. |
+| The best spacing pattern is still debated: some studies favour expanding intervals and others the opposite. Schedulers that model each card's memory, such as **FSRS**, predict forgetting better than SM-2 or fixed boxes on large public review datasets, and FSRS is now Anki's default. | Started with Leitner boxes (Steps 3–8), then moved to FSRS (Step 9): each card gets its own interval, set so you review it when recall drops to about 90%. |
 | **Interleaving** helps people tell apart categories that look alike (Brunmair & Richter 2019, 59 studies, g = 0.42, strongest with visual material). | Once a set of characters is known, mix the look-alikes in the same session: さ/ち, ぬ/め, ね/れ/わ, る/ろ, は/ほ, and later シ/ツ, ソ/ン. |
 | **Image mnemonics** have mixed evidence for kana. They help motivation and pass rates more than raw recall. | Show an optional French mnemonic, but only *after* a wrong answer. It is a support, not the method. |
 | Learning a little at a time works best, and immediate feedback helps. | New characters arrive in groups of 5 (one gojūon row). The next group opens only when the current one is stable. Each answer is marked right or wrong straight away. |
@@ -23,7 +23,7 @@ A command-line app, with its interface in French, for learning hiragana and late
 - 46 basic hiragana, then dakuten (が, ぱ…) and combined sounds (きゃ…).
 - Mode **kana → romaji**: you see a character and type its romaji.
 - Mode **romaji → kana**: you see romaji and recall the kana. You check yourself, then press `o`/`n` (oui/non).
-- Leitner scheduling with 5 boxes and intervals of 0, 1, 3, 7 and 21 days.
+- Scheduling: Leitner boxes at first (0, 1, 3, 7 and 21 days), then FSRS-5 from Step 9.
 - Progress saved to a JSON file.
 - Katakana comes later. It's the same engine with a second data table.
 
@@ -92,6 +92,11 @@ Each step names the Rust concepts it teaches.
 - Add a `KATAKANA` table and a `Script` enum. Reuse the whole engine as is.
 - **Rust:** generics or traits, and refactoring.
 
+### Step 9: FSRS instead of Leitner ✅
+- **Done:** [src/fsrs.rs](src/fsrs.rs) implements FSRS-5 by hand with its 19 default weights. A `Memory { stability, difficulty }` comes from `Memory::initial(rating)`, is updated by `next(rating, elapsed_days)` (separate same-day, lapse and success formulas), and `interval_days` turns stability into the next review date at 90% retention. `Card` now holds `memory: Option<Memory>` and `last_review` instead of `box_number`. Wrong → Again (due again today), Correct → Good, Fast → Easy. A group unlocks when every card reaches 5 days of stability, so it takes a second good review or a fast first answer, as box 3 did. `storage` converts old Leitner files on load (`#[serde(untagged)]` enum + `From`). `kana stats` shows cards by stability. 20 tests in total.
+- Lessons learned: `f64` maths (`powf`, `exp`, `clamp`); `impl From<A> for B` gives you `B::from(a)` and `.into()`; with `#[serde(untagged)]` variants are tried in order, and missing `Option` fields deserialize as `None`, so the stricter variant must come first; `#[allow(dead_code)]` documents something kept on purpose.
+- **Rust:** `f64`, the `From` trait, serde enums, data migration.
+
 ---
 
 ## 4. Suggested project layout
@@ -102,13 +107,14 @@ kana/
 └── src/
     ├── main.rs        # CLI (clap)
     ├── kana.rs        # data tables
-    ├── card.rs        # Card + Leitner logic
+    ├── card.rs        # Card, review outcomes, unlocking
+    ├── fsrs.rs        # FSRS scheduling maths
     ├── session.rs     # review loop
     └── storage.rs     # JSON save/load
 ```
 
 ## 5. Possible next steps
-- Replace Leitner with SM-2 or FSRS, which schedule reviews more precisely.
+- Tune FSRS weights to your own review history (needs a review log).
 - A TUI (`ratatui`) or a GUI, then kanji.
 
 ---

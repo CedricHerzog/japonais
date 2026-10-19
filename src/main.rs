@@ -6,6 +6,7 @@ use crate::kana::Script;
 use crate::session::Mode;
 
 mod card;
+mod fsrs;
 mod kana;
 mod session;
 mod storage;
@@ -90,9 +91,24 @@ fn stats(cards: &[Card], script: Script, today: NaiveDate) {
         return;
     }
     println!("Kana débloqués : {}/{}", cards.len(), script.table().len());
-    for b in 1..=5 {
-        let n = cards.iter().filter(|c| c.box_number == b).count();
-        println!("Boîte {b} : {:<3} {}", n, "█".repeat(n));
+    // Cards grouped by stability: how many days they stay 90% remembered.
+    let buckets = [
+        ("Nouveaux", -1.0, 0.0),
+        ("< 3 j", 0.0, 3.0),
+        ("3–7 j", 3.0, 7.0),
+        ("7–21 j", 7.0, 21.0),
+        ("21 j +", 21.0, f64::INFINITY),
+    ];
+    println!("Mémorisation (stabilité) :");
+    for (label, min, max) in buckets {
+        let n = cards
+            .iter()
+            .filter(|c| match c.memory {
+                None => min < 0.0,
+                Some(m) => min <= m.stability && m.stability < max,
+            })
+            .count();
+        println!("  {label:<9}: {n:<3} {}", "█".repeat(n));
     }
     let due = cards.iter().filter(|c| c.is_due(today)).count();
     println!("À réviser aujourd'hui : {due}");
