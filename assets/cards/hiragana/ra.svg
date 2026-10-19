@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-<!-- ら (ra) : un rat dodu dresse la queue -->
+<!-- ら (ra) : un rat dodu : le dos rond est le corps, le trait vertical sa queue dressée -->
 <rect width="400" height="400" rx="28" fill="#fdf6e3"/><defs><clipPath id="card"><rect x="14" y="14" width="372" height="372" rx="18"/></clipPath></defs>
 <rect x="14" y="14" width="372" height="372" rx="18" fill="#d9a066"/>
 <g clip-path="url(#card)">

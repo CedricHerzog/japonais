@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-<!-- へ (he) : un hérisson fait le gros dos, « Hé ! » -->
+<!-- へ (he) : un hérisson fait le gros dos, son dos est le trait -->
 <rect width="400" height="400" rx="28" fill="#fdf6e3"/><defs><clipPath id="card"><rect x="14" y="14" width="372" height="372" rx="18"/></clipPath></defs>
 <rect x="14" y="14" width="372" height="372" rx="18" fill="#7fb86a"/>
 <g clip-path="url(#card)">

@@ -1,27 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-<!-- ヘ (he) : au sommet de la montagne, un randonneur crie « Hé ! » et l'écho répond -->
+<!-- ヘ (he) : un héron en vol, les deux traits sont ses ailes levées, « hé »ron -->
 <rect width="400" height="400" rx="28" fill="#fdf6e3"/>
 <defs><clipPath id="card"><rect x="14" y="14" width="372" height="372" rx="18"/></clipPath></defs>
-<rect x="14" y="14" width="372" height="372" rx="18" fill="#7fb86a"/>
+<rect x="14" y="14" width="372" height="372" rx="18" fill="#4fa3a5"/>
 <g clip-path="url(#card)">
-<path d="M30 340L90 292L178 182L318 296L400 350V400H0V360Z" fill="#5f9c50"/>
+<g transform="translate(180 176) scale(1.35) translate(-180 -176)"><path d="M150 170C160 156 196 154 214 164C204 176 168 180 150 170Z" fill="#1d3d5c"/>
+<path d="M154 166C140 160 130 150 132 140C134 132 142 130 148 134" fill="none" stroke="#1d3d5c" stroke-width="9" stroke-linecap="round"/>
+<ellipse cx="140" cy="132" rx="10" ry="8" fill="#1d3d5c"/>
+<path d="M132 128L92 132L132 136Z" fill="#f2a65a"/>
+<circle cx="142" cy="130" r="2.2" fill="#fdf6e3"/>
+<path d="M210 166L276 158M210 168L276 166" stroke="#f2a65a" stroke-width="4" stroke-linecap="round"/>
+<path d="M144 126C150 116 160 112 170 114" fill="none" stroke="#1d3d5c" stroke-width="3" stroke-linecap="round"/></g>
 </g>
 <path id="glyph" d="M318.5 278.6Q317.0 277.1 315.4 276.8Q313.7 276.5 312.2 275.6Q307.4 272.3 298.0 265.1Q288.5 257.9 276.5 248.3Q264.5 238.7 252.1 228.5Q239.6 218.3 228.2 209.0Q216.8 199.7 208.4 193.0Q200.0 186.2 196.7 183.8Q189.5 178.7 184.2 176.1Q179.0 173.6 173.9 173.6Q168.5 173.6 163.0 176.9Q157.4 180.2 149.9 186.2Q136.4 197.6 123.5 209.8Q110.6 221.9 95.6 232.4Q93.8 233.6 91.6 234.1Q89.3 234.5 87.2 234.5Q82.7 234.5 82.7 237.8Q82.7 238.4 83.3 239.6Q83.9 240.5 84.7 241.4Q85.4 242.3 86.6 243.2Q88.1 244.4 91.2 246.5Q94.4 248.6 97.4 248.6Q100.4 248.6 104.3 245.9Q115.4 237.8 126.2 228.1Q137.0 218.3 146.5 209.2Q155.9 200.0 163.1 194.3Q169.7 188.6 174.8 188.6Q180.2 188.6 188.6 195.5Q195.8 201.5 207.8 212.0Q219.8 222.5 235.7 235.7Q251.6 248.9 269.9 263.8Q288.2 278.6 308.0 293.0Q311.6 296.0 315.8 296.0Q318.8 296.0 320.3 294.5Q322.7 292.4 322.7 289.1Q322.7 285.8 321.2 282.8Q319.7 279.8 318.5 278.6Z" fill="#fdf6e3" stroke="#fdf6e3" stroke-width="12" stroke-linejoin="round"/>
-<g clip-path="url(#card)">
-<g fill="#1d3d5c">
-<path d="M169 126C168 140 166 154 162 168L172 168C175 154 177 140 179 128Z"/>
-<path d="M187 126C188 140 191 154 196 168L186 168C182 154 179 140 177 128Z"/>
-<ellipse cx="164" cy="170" rx="9" ry="4"/><ellipse cx="194" cy="170" rx="9" ry="4"/>
-<path d="M166 94C164 106 165 120 168 132L188 132C191 120 192 106 190 94C182 89 174 89 166 94Z"/>
-<path d="M168 98C161 86 155 74 149 62L156 59C162 71 168 82 175 92Z"/>
-<path d="M188 98C195 86 201 74 207 62L200 59C194 71 188 82 181 92Z"/>
-<circle cx="151" cy="58" r="5"/><circle cx="205" cy="58" r="5"/>
-<path d="M174 92L175 82H181L182 92Z"/>
-<ellipse cx="178" cy="73" rx="10" ry="11"/>
-</g>
-<path d="M167 70C167 58 189 58 189 70Z" fill="#f2a65a"/>
-<path d="M186 68H198" stroke="#f2a65a" stroke-width="4" stroke-linecap="round"/>
-<path d="M168 96C174 100 182 100 188 96L189 104C182 108 174 108 167 104Z" fill="#f2a65a"/>
-<g fill="none" stroke="#1d3d5c" stroke-width="4.5" stroke-linecap="round"><path d="M218 62q9 12 0 24M234 54q15 20 0 40M252 46q20 28 0 56"/></g>
-</g>
 </svg>

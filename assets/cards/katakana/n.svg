@@ -1,18 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-<!-- ン (n) : un avion décolle et monte vers la droite en vrombissant, « Nnnn ! » -->
+<!-- ン (n) : un nunchaku : deux bâtons reliés par une chaîne, l'un lancé vers le haut, « n »unchaku -->
 <rect width="400" height="400" rx="28" fill="#fdf6e3"/>
 <defs><clipPath id="card"><rect x="14" y="14" width="372" height="372" rx="18"/></clipPath></defs>
-<rect x="14" y="14" width="372" height="372" rx="18" fill="#c9574a"/>
+<rect x="14" y="14" width="372" height="372" rx="18" fill="#a86cc1"/>
 <g clip-path="url(#card)">
-<path d="M100 152C108 136 130 132 142 142C152 128 180 130 186 148C202 148 212 162 206 176C196 188 120 188 108 178C96 174 94 160 100 152Z" fill="#d9706a"/>
+<ellipse cx="200" cy="198" rx="9" ry="5" transform="rotate(104 200 198)" fill="none" stroke="#1d3d5c" stroke-width="4"/><ellipse cx="195" cy="214" rx="9" ry="5" transform="rotate(107 195 214)" fill="none" stroke="#1d3d5c" stroke-width="4"/><ellipse cx="190" cy="230" rx="9" ry="5" transform="rotate(110 190 230)" fill="none" stroke="#1d3d5c" stroke-width="4"/><ellipse cx="185" cy="244" rx="9" ry="5" transform="rotate(113 185 244)" fill="none" stroke="#1d3d5c" stroke-width="4"/><ellipse cx="179" cy="257" rx="9" ry="5" transform="rotate(117 179 257)" fill="none" stroke="#1d3d5c" stroke-width="4"/><ellipse cx="173" cy="268" rx="9" ry="5" transform="rotate(121 173 268)" fill="none" stroke="#1d3d5c" stroke-width="4"/><ellipse cx="166" cy="279" rx="9" ry="5" transform="rotate(125 166 279)" fill="none" stroke="#1d3d5c" stroke-width="4"/><ellipse cx="159" cy="288" rx="9" ry="5" transform="rotate(131 159 288)" fill="none" stroke="#1d3d5c" stroke-width="4"/><ellipse cx="151" cy="296" rx="9" ry="5" transform="rotate(137 151 296)" fill="none" stroke="#1d3d5c" stroke-width="4"/><ellipse cx="143" cy="302" rx="9" ry="5" transform="rotate(144 143 302)" fill="none" stroke="#1d3d5c" stroke-width="4"/><ellipse cx="135" cy="308" rx="9" ry="5" transform="rotate(151 135 308)" fill="none" stroke="#1d3d5c" stroke-width="4"/><ellipse cx="126" cy="312" rx="9" ry="5" transform="rotate(158 126 312)" fill="none" stroke="#1d3d5c" stroke-width="4"/>
 </g>
 <path id="glyph" d="M175.4 194.3Q178.7 194.3 181.2 191.6Q183.8 188.9 183.8 185.6Q183.8 182.0 180.5 179.9Q177.5 177.8 170.8 174.1Q164.0 170.3 155.5 166.0Q146.9 161.6 138.4 157.6Q129.8 153.5 123.4 151.0Q116.9 148.4 114.5 148.4Q111.5 148.4 109.6 150.5Q107.6 152.6 107.6 155.3Q107.6 159.2 111.8 161.0Q117.5 163.1 125.9 167.1Q134.3 171.2 143.1 175.9Q152.0 180.5 159.6 185.2Q167.3 189.8 171.8 193.1Q173.3 194.3 175.4 194.3ZM122.3 314.6Q125.9 317.3 128.9 317.3Q131.3 317.3 137.6 314.9Q168.5 302.9 195.7 286.7Q222.8 270.5 244.9 253.4Q266.9 236.3 282.7 220.9Q298.4 205.4 307.0 194.3Q315.5 183.2 315.5 179.9Q315.5 176.9 312.8 176.9Q309.2 176.9 305.3 181.7Q301.4 186.8 291.7 196.0Q281.9 205.1 268.0 216.8Q254.0 228.5 237.5 241.0Q221.0 253.4 202.9 265.0Q184.7 276.5 166.7 285.4Q148.7 294.2 131.9 299.0Q128.9 299.9 126.5 300.2Q124.1 300.5 122.6 300.5Q121.1 300.5 120.1 300.4Q119.0 300.2 118.1 300.2Q116.6 300.2 115.7 301.1Q114.8 302.0 114.8 302.9Q114.8 305.3 117.5 308.8Q120.2 312.2 122.3 314.6Z" fill="#fdf6e3" stroke="#fdf6e3" stroke-width="12" stroke-linejoin="round"/>
 <g clip-path="url(#card)">
-<g transform="rotate(-38 334 166)">
-<path d="M300 166C300 158 306 154 316 154H352C364 154 374 160 378 166C374 172 364 178 352 178H316C306 178 300 174 300 166Z" fill="#1d3d5c"/>
-<path d="M330 162L316 128H328L350 162ZM330 170L316 204H328L350 170Z" fill="#1d3d5c"/>
-<path d="M302 162L294 146H302L314 162Z" fill="#1d3d5c"/>
-<g fill="#a8d8f0"><circle cx="340" cy="162" r="2.6"/><circle cx="350" cy="162" r="2.6"/><circle cx="330" cy="162" r="2.6"/><path d="M362 160H370L373 164H362Z"/></g>
-</g>
+<g fill="none" stroke="#c99bd8" stroke-width="5" stroke-linecap="round"><path d="M330 150q16 8 20 26M300 136q30 6 40 40"/></g>
 </g>
 </svg>

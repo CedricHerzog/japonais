@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-<!-- ハ (ha) : un coup de hache fend la bûche en deux moitiés, « Ha ! » -->
+<!-- ハ (ha) : une hache fend la bûche en deux moitiés qui s'écartent, « ha »che -->
 <rect width="400" height="400" rx="28" fill="#fdf6e3"/>
 <defs><clipPath id="card"><rect x="14" y="14" width="372" height="372" rx="18"/></clipPath></defs>
 <rect x="14" y="14" width="372" height="372" rx="18" fill="#e07b62"/>

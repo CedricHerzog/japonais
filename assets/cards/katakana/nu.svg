@@ -2,7 +2,7 @@
 <!-- ヌ (nu) : une longue nouille soulevée du bol, traversée par une baguette -->
 <rect width="400" height="400" rx="28" fill="#fdf6e3"/>
 <defs><clipPath id="card"><rect x="14" y="14" width="372" height="372" rx="18"/></clipPath></defs>
-<rect x="14" y="14" width="372" height="372" rx="18" fill="#f2c94c"/>
+<rect x="14" y="14" width="372" height="372" rx="18" fill="#7fb86a"/>
 <g clip-path="url(#card)">
 <path d="M134 166L330 290" stroke="#1d3d5c" stroke-width="9" stroke-linecap="round"/>
 <path d="M262 258L334 306" stroke="#1d3d5c" stroke-width="9" stroke-linecap="round"/>
