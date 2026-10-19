@@ -3,7 +3,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::kana::HIRAGANA;
 
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub enum Outcome {
+    Fast, // right and quick: moves up two boxes
     Correct,
     Wrong,
 }
@@ -29,14 +31,11 @@ impl Card {
     }
 
     pub fn answer(&mut self, outcome: Outcome, today: NaiveDate) {
-        match outcome {
-            Outcome::Correct => {
-                if self.box_number < 5 {
-                    self.box_number += 1;
-                }
-            }
-            Outcome::Wrong => self.box_number = 1,
-        }
+        self.box_number = match outcome {
+            Outcome::Fast => (self.box_number + 2).min(5),
+            Outcome::Correct => (self.box_number + 1).min(5),
+            Outcome::Wrong => 1,
+        };
         let days = match self.box_number {
             1 => 0,
             2 => 1,
@@ -94,6 +93,17 @@ mod tests {
         card.answer(Outcome::Correct, day());
         assert_eq!(card.box_number, 2);
         assert_eq!(card.next_study, day() + Days::new(1));
+    }
+
+    #[test]
+    fn fast_moves_up_two_boxes_capped_at_5() {
+        let mut card = Card::new(0, day());
+        card.answer(Outcome::Fast, day());
+        assert_eq!(card.box_number, 3);
+        assert_eq!(card.next_study, day() + Days::new(3));
+        card.box_number = 4;
+        card.answer(Outcome::Fast, day());
+        assert_eq!(card.box_number, 5);
     }
 
     #[test]

@@ -1,14 +1,19 @@
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 use std::io;
+use std::time::{Duration, Instant};
 
 use chrono::NaiveDate;
 use clap::ValueEnum;
+use colored::Colorize;
 use rand::RngExt;
 
 use crate::card::{Card, Outcome};
 use crate::kana::{self, Kana};
 use crate::storage;
+
+/// A right answer typed faster than this moves the card up two boxes.
+const FAST: Duration = Duration::from_secs(3);
 
 /// Direction of the questions.
 #[derive(Clone, Copy, ValueEnum)]
@@ -29,8 +34,8 @@ pub struct Summary {
 
 impl fmt::Display for Summary {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Score : {}/{}", self.correct, self.asked)?;
-        writeln!(f, "Cartes montées d'une boîte : {}", self.moved_up)?;
+        writeln!(f, "{} {}/{}", "Score :".bold(), self.correct, self.asked)?;
+        writeln!(f, "Cartes qui ont progressé : {}", self.moved_up)?;
         match self.next_review {
             Some(date) => write!(f, "Prochaine révision : {}", date.format("%d/%m/%Y")),
             None => write!(f, "Prochaine révision : aucune"),
@@ -61,20 +66,18 @@ pub fn run(cards: &mut [Card], today: NaiveDate, mode: Mode) -> Summary {
 
         let x = pool[rand::rng().random_range(0..pool.len())];
         let to_guess = &kana::HIRAGANA[cards[x].id];
-        let Some(correct) = ask(to_guess, mode) else {
+        let Some(outcome) = ask(to_guess, mode) else {
             break;
         };
 
         summary.asked += 1;
         let before = cards[x].box_number;
-        if correct {
+        if outcome != Outcome::Wrong {
             summary.correct += 1;
-            // A look-alike asked early keeps its schedule when right.
-            if cards[x].is_due(today) {
-                cards[x].answer(Outcome::Correct, today);
-            }
-        } else {
-            cards[x].answer(Outcome::Wrong, today);
+        }
+        // A look-alike asked early keeps its schedule when right.
+        if outcome == Outcome::Wrong || cards[x].is_due(today) {
+            cards[x].answer(outcome, today);
         }
         if cards[x].box_number > before {
             summary.moved_up += 1;
@@ -99,35 +102,54 @@ pub fn run(cards: &mut [Card], today: NaiveDate, mode: Mode) -> Summary {
     summary
 }
 
-/// Asks one question. Returns whether the answer was right, or None if the user quits.
-fn ask(k: &Kana, mode: Mode) -> Option<bool> {
+/// Asks one question. Returns the outcome, or None if the user quits.
+fn ask(k: &Kana, mode: Mode) -> Option<Outcome> {
     match mode {
         Mode::Normal => {
-            println!("Quel est le romaji de {} ?", k.kana);
+            println!("Quel est le romaji de {} ?", k.kana.bold());
+            let start = Instant::now();
             let answer = read_line()?;
-            let correct = k.romaji.contains(&answer.as_str());
-            if correct {
-                println!("Correct ! :-)");
-            } else {
-                println!("Raté, c'était {}... :-(", k.romaji[0]);
+            let elapsed = start.elapsed();
+
+            if !k.romaji.contains(&answer.as_str()) {
+                println!("{} c'était {}", "Raté,".red().bold(), k.romaji[0].bold());
+                show_mnemonic(k);
+                return Some(Outcome::Wrong);
             }
-            Some(correct)
+            let seconds = format!("({:.1} s)", elapsed.as_secs_f32()).dimmed();
+            if elapsed < FAST {
+                println!("{} {seconds}", "Correct, et rapide !".green().bold());
+                Some(Outcome::Fast)
+            } else {
+                println!("{} {seconds}", "Correct !".green());
+                Some(Outcome::Correct)
+            }
         }
+        // No speed bonus here: the time includes writing on paper.
         Mode::Inverse => {
             println!(
                 "Écris le kana de « {} », puis appuie sur Entrée.",
-                k.romaji[0]
+                k.romaji[0].bold()
             );
             read_line()?;
-            println!("Réponse : {}. C'était juste ? (o/n)", k.kana);
+            println!("Réponse : {}. C'était juste ? (o/n)", k.kana.bold());
             loop {
                 match read_line()?.as_str() {
-                    "o" => return Some(true),
-                    "n" => return Some(false),
+                    "o" => return Some(Outcome::Correct),
+                    "n" => {
+                        show_mnemonic(k);
+                        return Some(Outcome::Wrong);
+                    }
                     _ => println!("Réponds par o ou n."),
                 }
             }
         }
+    }
+}
+
+fn show_mnemonic(k: &Kana) {
+    if let Some(mnemonic) = k.mnemonic {
+        println!("  {} {}", "Astuce :".yellow(), mnemonic.italic());
     }
 }
 

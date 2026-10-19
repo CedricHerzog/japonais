@@ -80,7 +80,8 @@ Each step names the Rust concepts it teaches.
 - Write all messages in French. Show a short summary at the end of each session (score, cards that went up a box, next review).
 - **Rust:** traits and derive. Crate: `clap` (derive).
 
-### Step 7: Mnemonics and polish
+### Step 7: Mnemonics and polish ✅
+- **Done:** `Kana.mnemonic: Option<&'static str>`, filled with a French mnemonic for 33 kana (every look-alike included) and `None` for the rest; it's shown after a mistake in both modes. Colours via `colored`'s `Colorize` trait (it also respects `NO_COLOR`). A new `Outcome::Fast` moves a card up 2 boxes when the answer takes under 3 s (`Instant` / `Duration`), in normal mode only. 8 unit tests.
 - Add a `mnemonic: Option<&'static str>` field (the text itself in French), shown after a mistake.
 - Colours with the `colored` crate. Time each answer: a slow right answer moves up one box, a fast one moves up two.
 - **Rust:** `Option` in depth, `std::time::Instant`.
