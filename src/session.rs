@@ -191,6 +191,14 @@ fn ask(k: &Kana, mode: Mode) -> Option<Outcome> {
 
 fn show_mnemonic(k: &Kana) {
     println!("  {} {}", "Astuce :".yellow(), k.mnemonic.italic());
+    let e = &k.example;
+    println!(
+        "  {} {} ({}) « {} »",
+        "Exemple :".yellow(),
+        e.word,
+        e.romaji,
+        e.fr
+    );
 }
 
 /// Reads one trimmed, lowercase line. None on end of input, read error, or "q".

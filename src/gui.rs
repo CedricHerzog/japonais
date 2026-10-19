@@ -73,6 +73,23 @@ fn card_image(script: Script, id: usize, size: f32) -> egui::Image<'static> {
         .corner_radius(12)
 }
 
+/// What goes under a card: the reading, the mnemonic and the example word.
+fn card_text(ui: &mut egui::Ui, k: &Kana) {
+    ui.label(kana_text(
+        &format!("{}  =  {}", k.kana, k.romaji.join(" / ")),
+        30.0,
+    ));
+    ui.add_space(4.0);
+    ui.label(RichText::new(k.mnemonic).italics().size(16.0));
+    ui.add_space(4.0);
+    let e = &k.example;
+    ui.label(
+        RichText::new(format!("{}  ·  {}  ·  « {} »", e.word, e.romaji, e.fr))
+            .size(16.0)
+            .weak(),
+    );
+}
+
 enum Screen {
     Home,
     Review(Box<Review>),
@@ -301,12 +318,7 @@ impl App {
                 Step::Intro => {
                     ui.label(RichText::new("Nouveau kana").strong());
                     ui.add(card_image(script, id, 300.0));
-                    ui.label(kana_text(
-                        &format!("{}  =  {}", k.kana, k.romaji.join(" / ")),
-                        32.0,
-                    ));
-                    ui.add_space(4.0);
-                    ui.label(RichText::new(k.mnemonic).italics().size(16.0));
+                    card_text(ui, k);
                     ui.add_space(12.0);
                     if ui.button("Compris").clicked() || enter {
                         q.step = Step::Asking;
@@ -373,11 +385,7 @@ impl App {
                     if result == Outcome::Wrong {
                         ui.label(RichText::new("Raté !").color(RED).size(28.0).strong());
                         ui.add(card_image(script, id, 260.0));
-                        ui.label(kana_text(
-                            &format!("{}  =  {}", k.kana, k.romaji.join(" / ")),
-                            32.0,
-                        ));
-                        ui.label(RichText::new(k.mnemonic).italics().size(16.0));
+                        card_text(ui, k);
                         ui.add_space(12.0);
                         if ui.button("Continuer").clicked() || enter {
                             return None;
@@ -447,11 +455,7 @@ impl App {
             let k = &script.table()[id];
             ui.vertical_centered(|ui| {
                 ui.add(card_image(script, id, 280.0));
-                ui.label(kana_text(
-                    &format!("{}  =  {}", k.kana, k.romaji.join(" / ")),
-                    28.0,
-                ));
-                ui.label(RichText::new(k.mnemonic).italics().size(15.0));
+                card_text(ui, k);
             });
             ui.separator();
         }
