@@ -2,9 +2,6 @@ use chrono::{Days, NaiveDate};
 use serde::{Deserialize, Serialize};
 
 use crate::fsrs::{self, Memory, Rating};
-#[cfg(test)]
-use crate::kana::HIRAGANA;
-use crate::kana::Kana;
 
 /// A group is mastered when all its cards reach this stability (in days).
 /// Above FSRS's first-Good value (3.2), so a group needs either a second
@@ -75,23 +72,23 @@ impl Card {
 }
 
 /// Adds the next group's cards if every card of the current group is stable enough.
-/// Returns the unlocked group number, if any.
-pub fn unlock_next_group(cards: &mut Vec<Card>, table: &[Kana], today: NaiveDate) -> Option<u8> {
-    let current = cards.iter().map(|c| table[c.id].group).max().unwrap_or(0);
+/// `groups[id]` is the group of card `id`. Returns the unlocked group number, if any.
+pub fn unlock_next_group(cards: &mut Vec<Card>, groups: &[u8], today: NaiveDate) -> Option<u8> {
+    let current = cards.iter().map(|c| groups[c.id]).max().unwrap_or(0);
 
     let mastered = cards
         .iter()
-        .filter(|c| table[c.id].group == current)
+        .filter(|c| groups[c.id] == current)
         .all(|c| c.stability() >= UNLOCK_STABILITY);
     if !mastered {
         return None;
     }
 
     let next = current + 1;
-    let new_cards: Vec<Card> = table
+    let new_cards: Vec<Card> = groups
         .iter()
         .enumerate()
-        .filter(|&(_, k)| k.group == next)
+        .filter(|&(_, &group)| group == next)
         .map(|(id, _)| Card::new(id, today))
         .collect();
     if new_cards.is_empty() {
@@ -105,6 +102,11 @@ pub fn unlock_next_group(cards: &mut Vec<Card>, table: &[Kana], today: NaiveDate
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::kana::Script;
+
+    fn hiragana() -> Vec<u8> {
+        Script::Hiragana.groups()
+    }
 
     fn day() -> NaiveDate {
         NaiveDate::from_ymd_opt(2026, 1, 1).unwrap()
@@ -166,49 +168,59 @@ mod tests {
     #[test]
     fn empty_deck_unlocks_group_1() {
         let mut cards = Vec::new();
-        assert_eq!(unlock_next_group(&mut cards, HIRAGANA, day()), Some(1));
+        assert_eq!(unlock_next_group(&mut cards, &hiragana(), day()), Some(1));
         assert_eq!(cards.len(), 5);
     }
 
     #[test]
     fn group_not_mastered_unlocks_nothing() {
         let mut cards = Vec::new();
-        unlock_next_group(&mut cards, HIRAGANA, day());
+        unlock_next_group(&mut cards, &hiragana(), day());
         for card in cards.iter_mut() {
             with_stability(card, UNLOCK_STABILITY);
         }
         with_stability(&mut cards[0], 3.0);
-        assert_eq!(unlock_next_group(&mut cards, HIRAGANA, day()), None);
+        assert_eq!(unlock_next_group(&mut cards, &hiragana(), day()), None);
         assert_eq!(cards.len(), 5);
     }
 
     #[test]
     fn one_correct_answer_is_not_enough_to_unlock() {
         let mut cards = Vec::new();
-        unlock_next_group(&mut cards, HIRAGANA, day());
+        unlock_next_group(&mut cards, &hiragana(), day());
         for card in cards.iter_mut() {
             card.answer(Outcome::Correct, day());
         }
-        assert_eq!(unlock_next_group(&mut cards, HIRAGANA, day()), None);
+        assert_eq!(unlock_next_group(&mut cards, &hiragana(), day()), None);
     }
 
     #[test]
     fn mastered_group_unlocks_next() {
         let mut cards = Vec::new();
-        unlock_next_group(&mut cards, HIRAGANA, day());
+        unlock_next_group(&mut cards, &hiragana(), day());
         for card in cards.iter_mut() {
             with_stability(card, UNLOCK_STABILITY);
         }
-        assert_eq!(unlock_next_group(&mut cards, HIRAGANA, day()), Some(2));
+        assert_eq!(unlock_next_group(&mut cards, &hiragana(), day()), Some(2));
         assert_eq!(cards.len(), 10);
     }
 
     #[test]
     fn nothing_after_last_group() {
-        let mut cards: Vec<Card> = (0..HIRAGANA.len()).map(|id| Card::new(id, day())).collect();
+        let mut cards: Vec<Card> = (0..Script::Hiragana.len())
+            .map(|id| Card::new(id, day()))
+            .collect();
         for card in cards.iter_mut() {
             with_stability(card, 30.0);
         }
-        assert_eq!(unlock_next_group(&mut cards, HIRAGANA, day()), None);
+        assert_eq!(unlock_next_group(&mut cards, &hiragana(), day()), None);
+    }
+
+    #[test]
+    fn first_kanji_group_has_10_cards() {
+        let mut cards = Vec::new();
+        let groups = Script::Kanji.groups();
+        assert_eq!(unlock_next_group(&mut cards, &groups, day()), Some(1));
+        assert_eq!(cards.len(), 10);
     }
 }

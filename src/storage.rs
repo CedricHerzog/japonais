@@ -60,6 +60,7 @@ fn file_path(script: Script) -> Result<PathBuf, Box<dyn std::error::Error>> {
     let name = match script {
         Script::Hiragana => "progression.json",
         Script::Katakana => "katakana.json",
+        Script::Kanji => "kanji.json",
     };
     Ok(home.join(".kana").join(name))
 }

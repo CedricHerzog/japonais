@@ -8,17 +8,18 @@ use crate::session::Mode;
 mod card;
 mod fsrs;
 mod kana;
+mod kanji;
 mod session;
 mod storage;
 
-/// Apprends les hiragana et les katakana dans ton terminal.
+/// Apprends les hiragana, les katakana et les kanji dans ton terminal.
 #[derive(Parser)]
 #[command(version, about)]
 struct Cli {
     #[command(subcommand)]
     command: Option<Command>,
 
-    /// Syllabaire étudié
+    /// Ce que tu étudies : hiragana, katakana ou les 2 136 kanji usuels (jōyō)
     #[arg(long, global = true, value_enum, default_value_t = Script::Hiragana)]
     script: Script,
 }
@@ -53,14 +54,13 @@ fn main() {
             let Some(mut cards) = load(script) else {
                 return;
             };
-            if let Some(group) = card::unlock_next_group(&mut cards, script.table(), today) {
-                let new_kana: Vec<&str> = script
-                    .table()
-                    .iter()
-                    .filter(|k| k.group == group)
-                    .map(|k| k.kana)
+            let groups = script.groups();
+            if let Some(group) = card::unlock_next_group(&mut cards, &groups, today) {
+                let new: Vec<&str> = (0..script.len())
+                    .filter(|&id| groups[id] == group)
+                    .map(|id| script.symbol(id))
                     .collect();
-                println!("Nouveau groupe débloqué : {}", new_kana.join(" "));
+                println!("Nouveau groupe débloqué : {}", new.join(" "));
             }
             let summary = session::run(&mut cards, script, today, mode, avance);
             println!("\n{summary}");
@@ -93,7 +93,11 @@ fn stats(cards: &[Card], script: Script, today: NaiveDate) {
         );
         return;
     }
-    println!("Kana débloqués : {}/{}", cards.len(), script.table().len());
+    let unlocked = match script {
+        Script::Kanji => "Kanji débloqués",
+        _ => "Kana débloqués",
+    };
+    println!("{unlocked} : {}/{}", cards.len(), script.len());
     // Cards grouped by stability: how many days they stay 90% remembered.
     let buckets = [
         ("Nouveaux", -1.0, 0.0),

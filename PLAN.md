@@ -98,6 +98,11 @@ Each step names the Rust concepts it teaches.
 - **Review ahead:** when nothing is due, `kana revision` says so and suggests `kana revision --avance`, which asks every unlocked card once (Anki's "Custom Study → Review ahead"). Answers still count: FSRS uses the real elapsed time, so an early success adds only a little stability and the schedule stays sound. Waiting for the due date remains the efficient default.
 - **Rust:** `f64`, the `From` trait, serde enums, data migration.
 
+### Step 10: Jōyō kanji ✅
+- **Done:** the "2,000 kanji" are the **Jōyō kanji**, the official list of 2,136 kanji for everyday use (2010 revision; 1,945 before). Schools teach 1,026 in grades 1–6 and the other 1,110 in secondary school. [data/kanji.tsv](data/kanji.tsv) holds all of them, built from KANJIDIC2 by [examples/kanji_data.rs](examples/kanji_data.rs) (`roxmltree` dev-dependency): school grade order, newspaper frequency within a grade, on and kun readings, French meanings (English for the 149 that KANJIDIC2 hasn't translated). [src/kanji.rs](src/kanji.rs) parses it once into `KANJI` (`LazyLock` + `include_str!`), in groups of 10 that never span two grades. `Script::Kanji` (`--script kanji`, saved to `~/.kana/kanji.json`) reuses the whole engine: `Script` gains `len` / `symbol` / `groups`, and `unlock_next_group` takes the list of groups instead of the kana table. Kanji questions are self-checked (Entrée, then the meaning and readings, then o/n), because a typed French meaning can't be checked reliably; `--mode inverse` asks for the kanji from its meaning, written on paper. 25 tests.
+- Lessons learned: `LazyLock` builds a `static` the first time it's used; `include_str!` gives a `&'static str`, so the parsed table can borrow from it without copying; slice patterns (`let [a, b, c] = fields[..] else { … }`) check a row's shape in one line.
+- **Rust:** `LazyLock`, `include_str!`, parsing with `split`, slice patterns.
+
 ---
 
 ## 4. Suggested project layout
@@ -105,9 +110,14 @@ Each step names the Rust concepts it teaches.
 ```
 kana/
 ├── Cargo.toml
+├── data/
+│   └── kanji.tsv      # the 2,136 Jōyō kanji (from KANJIDIC2)
+├── examples/
+│   └── kanji_data.rs  # builds kanji.tsv from kanjidic2.xml
 └── src/
     ├── main.rs        # CLI (clap)
-    ├── kana.rs        # data tables
+    ├── kana.rs        # kana tables, Script
+    ├── kanji.rs       # kanji table
     ├── card.rs        # Card, review outcomes, unlocking
     ├── fsrs.rs        # FSRS scheduling maths
     ├── session.rs     # review loop
@@ -116,9 +126,14 @@ kana/
 
 ## 5. Possible next steps
 - Tune FSRS weights to your own review history (needs a review log).
-- A TUI (`ratatui`) or a GUI, then kanji.
+- Dakuten (が, ぱ…) and combined sounds (きゃ…).
+- French meanings for the 149 kanji that KANJIDIC2 gives only in English.
+- Kanji vocabulary: words made of kanji you already know.
 
 ---
+
+### Credits
+- Kanji data: KANJIDIC2 by the Electronic Dictionary Research and Development Group, CC BY-SA 4.0 (https://www.edrdg.org/edrdg/licence.html).
 
 ### Sources
 - Dunlosky et al. (2013), *Improving Students' Learning With Effective Learning Techniques*. Psychological Science in the Public Interest.

@@ -1,5 +1,7 @@
 use clap::ValueEnum;
 
+use crate::kanji::KANJI;
+
 pub struct Kana {
     pub kana: &'static str,
     pub romaji: &'static [&'static str],
@@ -640,18 +642,21 @@ pub const CONFUSABLES: &[&[&str]] = &[
     &["ウ", "ワ"],
 ];
 
-/// Which syllabary to study. Each one has its own table and its own deck.
+/// Which deck to study. Each one has its own table and its own save file.
 #[derive(Clone, Copy, ValueEnum)]
 pub enum Script {
     Hiragana,
     Katakana,
+    Kanji,
 }
 
 impl Script {
+    /// The kana table. Empty for kanji, which have their own (`kanji::KANJI`).
     pub fn table(self) -> &'static [Kana] {
         match self {
             Script::Hiragana => HIRAGANA,
             Script::Katakana => KATAKANA,
+            Script::Kanji => &[],
         }
     }
 
@@ -659,6 +664,30 @@ impl Script {
         match self {
             Script::Hiragana => "hiragana",
             Script::Katakana => "katakana",
+            Script::Kanji => "kanji",
+        }
+    }
+
+    pub fn len(self) -> usize {
+        match self {
+            Script::Kanji => KANJI.len(),
+            _ => self.table().len(),
+        }
+    }
+
+    /// The character of card `id`.
+    pub fn symbol(self, id: usize) -> &'static str {
+        match self {
+            Script::Kanji => KANJI[id].kanji,
+            _ => self.table()[id].kana,
+        }
+    }
+
+    /// The group of every card, indexed by card id.
+    pub fn groups(self) -> Vec<u8> {
+        match self {
+            Script::Kanji => KANJI.iter().map(|k| k.group).collect(),
+            _ => self.table().iter().map(|k| k.group).collect(),
         }
     }
 }

@@ -10,6 +10,7 @@ use rand::RngExt;
 
 use crate::card::{Card, Outcome};
 use crate::kana::{self, Kana, Script};
+use crate::kanji::{KANJI, Kanji};
 use crate::storage;
 
 /// A right answer typed faster than this is rated Easy instead of Good.
@@ -18,9 +19,9 @@ const FAST: Duration = Duration::from_secs(3);
 /// Direction of the questions.
 #[derive(Clone, Copy, ValueEnum)]
 pub enum Mode {
-    /// Kana → romaji : tu tapes la réponse
+    /// Kana → romaji : tu tapes la réponse (kanji → sens : tu t'auto-évalues)
     Normal,
-    /// Romaji → kana : tu l'écris sur papier et tu t'auto-évalues
+    /// Romaji → kana, ou sens → kanji : tu l'écris sur papier et tu t'auto-évalues
     Inverse,
 }
 
@@ -52,7 +53,6 @@ pub fn run(
     mode: Mode,
     ahead: bool,
 ) -> Summary {
-    let table = script.table();
     let mut summary = Summary::default();
     if !ahead && !cards.iter().any(|c| c.is_due(today)) {
         println!("Rien à réviser pour l'instant.");
@@ -61,11 +61,11 @@ pub fn run(
         return summary;
     }
 
-    // kana → index in `cards`, to find look-alikes quickly
+    // character → index in `cards`, to find look-alikes quickly
     let index: HashMap<&str, usize> = cards
         .iter()
         .enumerate()
-        .map(|(i, c)| (table[c.id].kana, i))
+        .map(|(i, c)| (script.symbol(c.id), i))
         .collect();
     let mut asked: HashSet<usize> = HashSet::new();
     let mut extras: HashSet<usize> = HashSet::new(); // look-alikes added to this session
@@ -82,8 +82,12 @@ pub fn run(
         }
 
         let x = pool[rand::rng().random_range(0..pool.len())];
-        let to_guess = &table[cards[x].id];
-        let Some(outcome) = ask(to_guess, mode) else {
+        let id = cards[x].id;
+        let answer = match script {
+            Script::Kanji => ask_kanji(&KANJI[id], mode),
+            _ => ask(&script.table()[id], mode),
+        };
+        let Some(outcome) = answer else {
             break;
         };
 
@@ -103,7 +107,7 @@ pub fn run(
 
         asked.insert(x);
         extras.remove(&x);
-        for other in kana::look_alikes(to_guess.kana) {
+        for other in kana::look_alikes(script.symbol(id)) {
             if let Some(&i) = index.get(other)
                 && !asked.contains(&i)
             {
@@ -150,17 +154,59 @@ fn ask(k: &Kana, mode: Mode) -> Option<Outcome> {
                 k.romaji[0].bold()
             );
             read_line()?;
-            println!("Réponse : {}. C'était juste ? (o/n)", k.kana.bold());
-            loop {
-                match read_line()?.as_str() {
-                    "o" => return Some(Outcome::Correct),
-                    "n" => {
-                        show_mnemonic(k);
-                        return Some(Outcome::Wrong);
-                    }
-                    _ => println!("Réponds par o ou n."),
-                }
+            println!("Réponse : {}.", k.kana.bold());
+            let outcome = self_check()?;
+            if outcome == Outcome::Wrong {
+                show_mnemonic(k);
             }
+            Some(outcome)
+        }
+    }
+}
+
+/// Asks one kanji question, always self-checked: a typed meaning can't be
+/// compared reliably. Returns the outcome, or None if the user quits.
+fn ask_kanji(k: &Kanji, mode: Mode) -> Option<Outcome> {
+    let meanings = k
+        .meanings
+        .iter()
+        .take(3)
+        .copied()
+        .collect::<Vec<_>>()
+        .join(", ");
+    match mode {
+        Mode::Normal => {
+            println!("Que veut dire {} ? (Entrée pour voir)", k.kanji.bold());
+            read_line()?;
+            println!("{}", meanings.bold());
+        }
+        Mode::Inverse => {
+            println!(
+                "Écris le kanji de « {} », puis appuie sur Entrée.",
+                meanings.bold()
+            );
+            read_line()?;
+            println!("Réponse : {}", k.kanji.bold());
+        }
+    }
+    let readings = [("on", &k.on), ("kun", &k.kun)]
+        .iter()
+        .filter(|(_, r)| !r.is_empty())
+        .map(|(label, r)| format!("{label} : {}", r.join("、")))
+        .collect::<Vec<_>>()
+        .join(" · ");
+    println!("  {}", readings.dimmed());
+    self_check()
+}
+
+/// "C'était juste ?" until the user answers o or n. None if they quit.
+fn self_check() -> Option<Outcome> {
+    println!("C'était juste ? (o/n)");
+    loop {
+        match read_line()?.as_str() {
+            "o" => return Some(Outcome::Correct),
+            "n" => return Some(Outcome::Wrong),
+            _ => println!("Réponds par o ou n."),
         }
     }
 }

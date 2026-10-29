@@ -14,3 +14,6 @@ colored = "3.1.1"
 rand = "0.10.3"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.154"
+
+[dev-dependencies]
+roxmltree = "0.21.2"
